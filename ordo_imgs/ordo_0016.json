@@ -1,0 +1,52 @@
+[
+  {
+    "label": "Patient",
+    "box": [
+      40,
+      98,
+      107,
+      8
+    ],
+    "text": "Camille Dubois"
+  },
+  {
+    "label": "Date",
+    "box": [
+      40,
+      116,
+      79,
+      9
+    ],
+    "text": "12/10/2024"
+  },
+  {
+    "label": "DRUG",
+    "box": [
+      40,
+      185,
+      235,
+      11
+    ],
+    "text": "MethylPREDNISolone Sodium Succ"
+  },
+  {
+    "label": "DETAILS",
+    "box": [
+      60,
+      201,
+      158,
+      9
+    ],
+    "text": "Forme: flacon   Voie: intraveineuse"
+  },
+  {
+    "label": "INSTRUCT",
+    "box": [
+      60,
+      215,
+      127,
+      10
+    ],
+    "text": "Posologie: 75 mg  2/j  3 jours"
+  }
+]

@@ -1,0 +1,82 @@
+[
+  {
+    "label": "Patient",
+    "box": [
+      40,
+      98,
+      103,
+      10
+    ],
+    "text": "Sophie Martin"
+  },
+  {
+    "label": "Date",
+    "box": [
+      40,
+      118,
+      79,
+      9
+    ],
+    "text": "10/06/2024"
+  },
+  {
+    "label": "DRUG",
+    "box": [
+      40,
+      187,
+      122,
+      11
+    ],
+    "text": "Torsemide"
+  },
+  {
+    "label": "DETAILS",
+    "box": [
+      60,
+      203,
+      137,
+      10
+    ],
+    "text": "Forme: comprim\u00e9   Voie: po/ng"
+  },
+  {
+    "label": "INSTRUCT",
+    "box": [
+      60,
+      218,
+      102,
+      10
+    ],
+    "text": "Posologie: 100 mg  1/j  "
+  },
+  {
+    "label": "DRUG",
+    "box": [
+      40,
+      253,
+      175,
+      11
+    ],
+    "text": "Heparin"
+  },
+  {
+    "label": "DETAILS",
+    "box": [
+      60,
+      269,
+      158,
+      9
+    ],
+    "text": "Forme: flacon   Voie: intraveineuse"
+  },
+  {
+    "label": "INSTRUCT",
+    "box": [
+      60,
+      283,
+      136,
+      10
+    ],
+    "text": "Posologie: 1500 UNIT    5 jours"
+  }
+]

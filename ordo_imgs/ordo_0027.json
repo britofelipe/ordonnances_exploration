@@ -1,0 +1,112 @@
+[
+  {
+    "label": "Patient",
+    "box": [
+      40,
+      98,
+      94,
+      8
+    ],
+    "text": "Jean Martin"
+  },
+  {
+    "label": "Date",
+    "box": [
+      40,
+      116,
+      79,
+      9
+    ],
+    "text": "19/07/2024"
+  },
+  {
+    "label": "DRUG",
+    "box": [
+      40,
+      185,
+      80,
+      10
+    ],
+    "text": "Vial"
+  },
+  {
+    "label": "DETAILS",
+    "box": [
+      60,
+      200,
+      158,
+      9
+    ],
+    "text": "Forme: flacon   Voie: intraveineuse"
+  },
+  {
+    "label": "INSTRUCT",
+    "box": [
+      60,
+      214,
+      96,
+      10
+    ],
+    "text": "Posologie: 1 VIAL  1/j  "
+  },
+  {
+    "label": "DRUG",
+    "box": [
+      40,
+      249,
+      99,
+      10
+    ],
+    "text": "Insulin"
+  },
+  {
+    "label": "DETAILS",
+    "box": [
+      60,
+      264,
+      153,
+      9
+    ],
+    "text": "Forme: flacon   Voie: sous-cutan\u00e9e"
+  },
+  {
+    "label": "INSTRUCT",
+    "box": [
+      60,
+      278,
+      136,
+      10
+    ],
+    "text": "Posologie: 30 UNIT  1/j  6 jours"
+  },
+  {
+    "label": "DRUG",
+    "box": [
+      40,
+      313,
+      225,
+      11
+    ],
+    "text": "OxycoDONE (Immediate Release) "
+  },
+  {
+    "label": "DETAILS",
+    "box": [
+      60,
+      329,
+      137,
+      10
+    ],
+    "text": "Forme: comprim\u00e9   Voie: po/ng"
+  },
+  {
+    "label": "INSTRUCT",
+    "box": [
+      60,
+      344,
+      78,
+      10
+    ],
+    "text": "Posologie: 5 mg    "
+  }
+]

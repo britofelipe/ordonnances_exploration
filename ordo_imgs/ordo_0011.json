@@ -1,0 +1,52 @@
+[
+  {
+    "label": "Patient",
+    "box": [
+      40,
+      98,
+      113,
+      8
+    ],
+    "text": "Camille Bernard"
+  },
+  {
+    "label": "Date",
+    "box": [
+      40,
+      116,
+      79,
+      9
+    ],
+    "text": "21/09/2024"
+  },
+  {
+    "label": "DRUG",
+    "box": [
+      40,
+      185,
+      209,
+      11
+    ],
+    "text": "Vancomycin"
+  },
+  {
+    "label": "DETAILS",
+    "box": [
+      60,
+      201,
+      90,
+      8
+    ],
+    "text": "Voie: intraveineuse"
+  },
+  {
+    "label": "INSTRUCT",
+    "box": [
+      60,
+      214,
+      102,
+      10
+    ],
+    "text": "Posologie: 500 mg  1/j  "
+  }
+]

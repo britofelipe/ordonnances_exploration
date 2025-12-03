@@ -1,0 +1,142 @@
+[
+  {
+    "label": "Patient",
+    "box": [
+      40,
+      98,
+      110,
+      10
+    ],
+    "text": "Sophie Bernard"
+  },
+  {
+    "label": "Date",
+    "box": [
+      40,
+      118,
+      79,
+      9
+    ],
+    "text": "06/03/2024"
+  },
+  {
+    "label": "DRUG",
+    "box": [
+      40,
+      187,
+      220,
+      11
+    ],
+    "text": "Sodium Chloride 0.9%  Flush"
+  },
+  {
+    "label": "DETAILS",
+    "box": [
+      60,
+      203,
+      90,
+      8
+    ],
+    "text": "Voie: intraveineuse"
+  },
+  {
+    "label": "INSTRUCT",
+    "box": [
+      60,
+      216,
+      105,
+      10
+    ],
+    "text": "Posologie: 3-10 mL  3/j  "
+  },
+  {
+    "label": "DRUG",
+    "box": [
+      40,
+      251,
+      164,
+      11
+    ],
+    "text": "Metoprolol Tartrate"
+  },
+  {
+    "label": "DETAILS",
+    "box": [
+      60,
+      267,
+      137,
+      10
+    ],
+    "text": "Forme: comprim\u00e9   Voie: po/ng"
+  },
+  {
+    "label": "INSTRUCT",
+    "box": [
+      60,
+      282,
+      96,
+      10
+    ],
+    "text": "Posologie: 25 mg  4/j  "
+  },
+  {
+    "label": "DRUG",
+    "box": [
+      40,
+      317,
+      129,
+      11
+    ],
+    "text": "Amiodarone"
+  },
+  {
+    "label": "DETAILS",
+    "box": [
+      60,
+      333,
+      137,
+      10
+    ],
+    "text": "Forme: comprim\u00e9   Voie: po/ng"
+  },
+  {
+    "label": "INSTRUCT",
+    "box": [
+      60,
+      348,
+      133,
+      10
+    ],
+    "text": "Posologie: 200 mg  3/j  1 jours"
+  },
+  {
+    "label": "DRUG",
+    "box": [
+      40,
+      383,
+      140,
+      11
+    ],
+    "text": "FLUoxetine"
+  },
+  {
+    "label": "DETAILS",
+    "box": [
+      60,
+      399,
+      121,
+      10
+    ],
+    "text": "Forme: g\u00e9lule   Voie: po/ng"
+  },
+  {
+    "label": "INSTRUCT",
+    "box": [
+      60,
+      414,
+      96,
+      10
+    ],
+    "text": "Posologie: 20 mg  1/j  "
+  }
+]

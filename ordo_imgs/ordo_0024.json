@@ -1,0 +1,82 @@
+[
+  {
+    "label": "Patient",
+    "box": [
+      40,
+      98,
+      104,
+      8
+    ],
+    "text": "Marie Bernard"
+  },
+  {
+    "label": "Date",
+    "box": [
+      40,
+      116,
+      79,
+      9
+    ],
+    "text": "18/10/2024"
+  },
+  {
+    "label": "DRUG",
+    "box": [
+      40,
+      185,
+      150,
+      11
+    ],
+    "text": "DOBUTamine"
+  },
+  {
+    "label": "DETAILS",
+    "box": [
+      60,
+      201,
+      53,
+      10
+    ],
+    "text": "Voie: iv drip"
+  },
+  {
+    "label": "INSTRUCT",
+    "box": [
+      60,
+      216,
+      90,
+      10
+    ],
+    "text": "Posologie: 250 mg    "
+  },
+  {
+    "label": "DRUG",
+    "box": [
+      40,
+      251,
+      302,
+      11
+    ],
+    "text": "Oxycodone-Acetaminophen (5mg-325mg)"
+  },
+  {
+    "label": "DETAILS",
+    "box": [
+      60,
+      267,
+      137,
+      10
+    ],
+    "text": "Forme: comprim\u00e9   Voie: po/ng"
+  },
+  {
+    "label": "INSTRUCT",
+    "box": [
+      60,
+      282,
+      93,
+      10
+    ],
+    "text": "Posologie: 1 TAB  1/j  "
+  }
+]

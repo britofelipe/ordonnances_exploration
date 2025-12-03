@@ -1,0 +1,112 @@
+[
+  {
+    "label": "Patient",
+    "box": [
+      40,
+      98,
+      98,
+      8
+    ],
+    "text": "Pierre Robert"
+  },
+  {
+    "label": "Date",
+    "box": [
+      40,
+      116,
+      79,
+      9
+    ],
+    "text": "15/10/2024"
+  },
+  {
+    "label": "DRUG",
+    "box": [
+      40,
+      185,
+      131,
+      11
+    ],
+    "text": "Haloperidol"
+  },
+  {
+    "label": "DETAILS",
+    "box": [
+      60,
+      201,
+      158,
+      9
+    ],
+    "text": "Forme: flacon   Voie: intraveineuse"
+  },
+  {
+    "label": "INSTRUCT",
+    "box": [
+      60,
+      215,
+      118,
+      10
+    ],
+    "text": "Posologie: 1-5 mg    3 jours"
+  },
+  {
+    "label": "DRUG",
+    "box": [
+      40,
+      250,
+      176,
+      11
+    ],
+    "text": "Enoxaparin Sodium"
+  },
+  {
+    "label": "DETAILS",
+    "box": [
+      60,
+      266,
+      85,
+      8
+    ],
+    "text": "Voie: sous-cutan\u00e9e"
+  },
+  {
+    "label": "INSTRUCT",
+    "box": [
+      60,
+      279,
+      96,
+      10
+    ],
+    "text": "Posologie: 60 mg  2/j  "
+  },
+  {
+    "label": "DRUG",
+    "box": [
+      40,
+      314,
+      212,
+      11
+    ],
+    "text": "Syringe (0.9% Sodium Chloride)"
+  },
+  {
+    "label": "DETAILS",
+    "box": [
+      60,
+      330,
+      90,
+      8
+    ],
+    "text": "Voie: intraveineuse"
+  },
+  {
+    "label": "INSTRUCT",
+    "box": [
+      60,
+      343,
+      90,
+      10
+    ],
+    "text": "Posologie: 2 mL  1/j  "
+  }
+]

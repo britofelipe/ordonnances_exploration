@@ -1,0 +1,112 @@
+[
+  {
+    "label": "Patient",
+    "box": [
+      40,
+      98,
+      97,
+      8
+    ],
+    "text": "Marie Martin"
+  },
+  {
+    "label": "Date",
+    "box": [
+      40,
+      116,
+      79,
+      9
+    ],
+    "text": "28/03/2024"
+  },
+  {
+    "label": "DRUG",
+    "box": [
+      40,
+      185,
+      88,
+      10
+    ],
+    "text": "Soln"
+  },
+  {
+    "label": "DETAILS",
+    "box": [
+      60,
+      200,
+      121,
+      11
+    ],
+    "text": "Forme: flacon   Voie: iv drip"
+  },
+  {
+    "label": "INSTRUCT",
+    "box": [
+      60,
+      216,
+      84,
+      10
+    ],
+    "text": "Posologie: 50 mL    "
+  },
+  {
+    "label": "DRUG",
+    "box": [
+      40,
+      251,
+      162,
+      11
+    ],
+    "text": "Polyethylene Glycol"
+  },
+  {
+    "label": "DETAILS",
+    "box": [
+      60,
+      267,
+      51,
+      10
+    ],
+    "text": "Voie: po/ng"
+  },
+  {
+    "label": "INSTRUCT",
+    "box": [
+      60,
+      282,
+      106,
+      10
+    ],
+    "text": "Posologie: 17 g    2 jours"
+  },
+  {
+    "label": "DRUG",
+    "box": [
+      40,
+      317,
+      84,
+      11
+    ],
+    "text": "Bag"
+  },
+  {
+    "label": "DETAILS",
+    "box": [
+      60,
+      333,
+      90,
+      8
+    ],
+    "text": "Voie: intraveineuse"
+  },
+  {
+    "label": "INSTRUCT",
+    "box": [
+      60,
+      346,
+      102,
+      10
+    ],
+    "text": "Posologie: 100 mL  1/j  "
+  }
+]

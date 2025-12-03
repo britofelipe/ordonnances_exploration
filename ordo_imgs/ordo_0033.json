@@ -1,0 +1,52 @@
+[
+  {
+    "label": "Patient",
+    "box": [
+      40,
+      98,
+      102,
+      8
+    ],
+    "text": "Marie Richard"
+  },
+  {
+    "label": "Date",
+    "box": [
+      40,
+      116,
+      79,
+      9
+    ],
+    "text": "15/11/2024"
+  },
+  {
+    "label": "DRUG",
+    "box": [
+      40,
+      185,
+      383,
+      11
+    ],
+    "text": "Potassium Chloride Replacement (Critical Care and Oncology) "
+  },
+  {
+    "label": "DETAILS",
+    "box": [
+      60,
+      201,
+      133,
+      10
+    ],
+    "text": "Forme: comprim\u00e9   Voie: orale"
+  },
+  {
+    "label": "INSTRUCT",
+    "box": [
+      60,
+      216,
+      121,
+      10
+    ],
+    "text": "Posologie: 60 mEq    1 jours"
+  }
+]

@@ -1,0 +1,52 @@
+[
+  {
+    "label": "Patient",
+    "box": [
+      40,
+      98,
+      104,
+      10
+    ],
+    "text": "Sophie Dubois"
+  },
+  {
+    "label": "Date",
+    "box": [
+      40,
+      118,
+      79,
+      9
+    ],
+    "text": "10/10/2024"
+  },
+  {
+    "label": "DRUG",
+    "box": [
+      40,
+      187,
+      145,
+      11
+    ],
+    "text": "Furosemide"
+  },
+  {
+    "label": "DETAILS",
+    "box": [
+      60,
+      203,
+      158,
+      9
+    ],
+    "text": "Forme: flacon   Voie: intraveineuse"
+  },
+  {
+    "label": "INSTRUCT",
+    "box": [
+      60,
+      217,
+      96,
+      10
+    ],
+    "text": "Posologie: 10 mg  1/j  "
+  }
+]

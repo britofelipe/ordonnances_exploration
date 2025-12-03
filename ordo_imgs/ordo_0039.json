@@ -1,0 +1,112 @@
+[
+  {
+    "label": "Patient",
+    "box": [
+      40,
+      98,
+      99,
+      8
+    ],
+    "text": "Jean Richard"
+  },
+  {
+    "label": "Date",
+    "box": [
+      40,
+      116,
+      79,
+      9
+    ],
+    "text": "12/02/2024"
+  },
+  {
+    "label": "DRUG",
+    "box": [
+      40,
+      185,
+      227,
+      11
+    ],
+    "text": "OxyCODONE (Immediate Release)"
+  },
+  {
+    "label": "DETAILS",
+    "box": [
+      60,
+      201,
+      137,
+      10
+    ],
+    "text": "Forme: comprim\u00e9   Voie: po/ng"
+  },
+  {
+    "label": "INSTRUCT",
+    "box": [
+      60,
+      216,
+      96,
+      10
+    ],
+    "text": "Posologie: 10 mg  1/j  "
+  },
+  {
+    "label": "DRUG",
+    "box": [
+      40,
+      251,
+      247,
+      11
+    ],
+    "text": "Dorzolamide 2% Ophth. Soln."
+  },
+  {
+    "label": "DETAILS",
+    "box": [
+      60,
+      267,
+      58,
+      11
+    ],
+    "text": "Voie: left eye"
+  },
+  {
+    "label": "INSTRUCT",
+    "box": [
+      60,
+      283,
+      132,
+      10
+    ],
+    "text": "Posologie: 1 DROP  3/j  6 jours"
+  },
+  {
+    "label": "DRUG",
+    "box": [
+      40,
+      318,
+      201,
+      11
+    ],
+    "text": "Influenza Virus Vaccine"
+  },
+  {
+    "label": "DETAILS",
+    "box": [
+      60,
+      334,
+      99,
+      8
+    ],
+    "text": "Voie: intramusculaire"
+  },
+  {
+    "label": "INSTRUCT",
+    "box": [
+      60,
+      347,
+      129,
+      10
+    ],
+    "text": "Posologie: 0.5 mL  0/j  3 jours"
+  }
+]

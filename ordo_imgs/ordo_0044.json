@@ -1,0 +1,52 @@
+[
+  {
+    "label": "Patient",
+    "box": [
+      40,
+      98,
+      101,
+      8
+    ],
+    "text": "Jean Bernard"
+  },
+  {
+    "label": "Date",
+    "box": [
+      40,
+      116,
+      79,
+      9
+    ],
+    "text": "11/10/2024"
+  },
+  {
+    "label": "DRUG",
+    "box": [
+      40,
+      185,
+      214,
+      11
+    ],
+    "text": "Magnesium Sulfate"
+  },
+  {
+    "label": "DETAILS",
+    "box": [
+      60,
+      201,
+      90,
+      8
+    ],
+    "text": "Voie: intraveineuse"
+  },
+  {
+    "label": "INSTRUCT",
+    "box": [
+      60,
+      214,
+      78,
+      10
+    ],
+    "text": "Posologie: 2 gm    "
+  }
+]

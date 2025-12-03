@@ -1,0 +1,112 @@
+[
+  {
+    "label": "Patient",
+    "box": [
+      40,
+      98,
+      95,
+      8
+    ],
+    "text": "Jean Dubois"
+  },
+  {
+    "label": "Date",
+    "box": [
+      40,
+      116,
+      79,
+      9
+    ],
+    "text": "28/07/2024"
+  },
+  {
+    "label": "DRUG",
+    "box": [
+      40,
+      185,
+      195,
+      11
+    ],
+    "text": "Cisatracurium Besylate"
+  },
+  {
+    "label": "DETAILS",
+    "box": [
+      60,
+      201,
+      127,
+      9
+    ],
+    "text": "Forme: flacon   Voie: iv bolus"
+  },
+  {
+    "label": "INSTRUCT",
+    "box": [
+      60,
+      215,
+      96,
+      10
+    ],
+    "text": "Posologie: 18 mg  1/j  "
+  },
+  {
+    "label": "DRUG",
+    "box": [
+      40,
+      250,
+      189,
+      11
+    ],
+    "text": "Sodium Chloride 0.9%  Flush"
+  },
+  {
+    "label": "DETAILS",
+    "box": [
+      60,
+      266,
+      90,
+      8
+    ],
+    "text": "Voie: intraveineuse"
+  },
+  {
+    "label": "INSTRUCT",
+    "box": [
+      60,
+      279,
+      121,
+      10
+    ],
+    "text": "Posologie: 3 mL  3/j  3 jours"
+  },
+  {
+    "label": "DRUG",
+    "box": [
+      40,
+      314,
+      128,
+      11
+    ],
+    "text": "Sterile Water"
+  },
+  {
+    "label": "DETAILS",
+    "box": [
+      60,
+      330,
+      90,
+      8
+    ],
+    "text": "Voie: intraveineuse"
+  },
+  {
+    "label": "INSTRUCT",
+    "box": [
+      60,
+      343,
+      90,
+      10
+    ],
+    "text": "Posologie: 150 mL    "
+  }
+]

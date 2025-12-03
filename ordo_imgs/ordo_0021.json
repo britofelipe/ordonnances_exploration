@@ -1,0 +1,142 @@
+[
+  {
+    "label": "Patient",
+    "box": [
+      40,
+      98,
+      96,
+      8
+    ],
+    "text": "Lucas Robert"
+  },
+  {
+    "label": "Date",
+    "box": [
+      40,
+      116,
+      79,
+      9
+    ],
+    "text": "03/08/2024"
+  },
+  {
+    "label": "DRUG",
+    "box": [
+      40,
+      185,
+      165,
+      11
+    ],
+    "text": "Acetaminophen"
+  },
+  {
+    "label": "DETAILS",
+    "box": [
+      60,
+      201,
+      47,
+      8
+    ],
+    "text": "Voie: orale"
+  },
+  {
+    "label": "INSTRUCT",
+    "box": [
+      60,
+      214,
+      121,
+      10
+    ],
+    "text": "Posologie: 650 mg    3 jours"
+  },
+  {
+    "label": "DRUG",
+    "box": [
+      40,
+      249,
+      150,
+      11
+    ],
+    "text": "Albuterol Inhaler"
+  },
+  {
+    "label": "DETAILS",
+    "box": [
+      60,
+      265,
+      34,
+      8
+    ],
+    "text": "Voie: ih"
+  },
+  {
+    "label": "INSTRUCT",
+    "box": [
+      60,
+      278,
+      125,
+      10
+    ],
+    "text": "Posologie: 4 PUFF    14 jours"
+  },
+  {
+    "label": "DRUG",
+    "box": [
+      40,
+      313,
+      202,
+      11
+    ],
+    "text": "Lidocaine Jelly 2% (Glydo)"
+  },
+  {
+    "label": "DETAILS",
+    "box": [
+      60,
+      329,
+      62,
+      8
+    ],
+    "text": "Voie: cutan\u00e9e"
+  },
+  {
+    "label": "INSTRUCT",
+    "box": [
+      60,
+      342,
+      84,
+      10
+    ],
+    "text": "Posologie: 1 Appl    "
+  },
+  {
+    "label": "DRUG",
+    "box": [
+      40,
+      377,
+      128,
+      11
+    ],
+    "text": "Vancomycin"
+  },
+  {
+    "label": "DETAILS",
+    "box": [
+      60,
+      393,
+      158,
+      9
+    ],
+    "text": "Forme: flacon   Voie: intraveineuse"
+  },
+  {
+    "label": "INSTRUCT",
+    "box": [
+      60,
+      407,
+      108,
+      10
+    ],
+    "text": "Posologie: 1250 mg  2/j  "
+  }
+]

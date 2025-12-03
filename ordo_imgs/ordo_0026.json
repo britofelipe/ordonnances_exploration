@@ -1,0 +1,82 @@
+[
+  {
+    "label": "Patient",
+    "box": [
+      40,
+      98,
+      97,
+      8
+    ],
+    "text": "Lucas Martin"
+  },
+  {
+    "label": "Date",
+    "box": [
+      40,
+      116,
+      79,
+      9
+    ],
+    "text": "02/11/2024"
+  },
+  {
+    "label": "DRUG",
+    "box": [
+      40,
+      185,
+      143,
+      10
+    ],
+    "text": "Vitamin D"
+  },
+  {
+    "label": "DETAILS",
+    "box": [
+      60,
+      200,
+      137,
+      10
+    ],
+    "text": "Forme: comprim\u00e9   Voie: po/ng"
+  },
+  {
+    "label": "INSTRUCT",
+    "box": [
+      60,
+      215,
+      148,
+      10
+    ],
+    "text": "Posologie: 2000 UNIT  2/j  5 jours"
+  },
+  {
+    "label": "DRUG",
+    "box": [
+      40,
+      250,
+      174,
+      10
+    ],
+    "text": "Insulin"
+  },
+  {
+    "label": "DETAILS",
+    "box": [
+      60,
+      265,
+      153,
+      9
+    ],
+    "text": "Forme: flacon   Voie: sous-cutan\u00e9e"
+  },
+  {
+    "label": "INSTRUCT",
+    "box": [
+      60,
+      279,
+      136,
+      10
+    ],
+    "text": "Posologie: 56 UNIT  1/j  4 jours"
+  }
+]

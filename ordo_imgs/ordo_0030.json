@@ -1,0 +1,82 @@
+[
+  {
+    "label": "Patient",
+    "box": [
+      40,
+      98,
+      104,
+      8
+    ],
+    "text": "Lucas Bernard"
+  },
+  {
+    "label": "Date",
+    "box": [
+      40,
+      116,
+      79,
+      9
+    ],
+    "text": "23/09/2024"
+  },
+  {
+    "label": "DRUG",
+    "box": [
+      40,
+      185,
+      221,
+      11
+    ],
+    "text": "Nitroglycerin"
+  },
+  {
+    "label": "DETAILS",
+    "box": [
+      60,
+      201,
+      53,
+      10
+    ],
+    "text": "Voie: iv drip"
+  },
+  {
+    "label": "INSTRUCT",
+    "box": [
+      60,
+      216,
+      121,
+      10
+    ],
+    "text": "Posologie: 100 mg    2 jours"
+  },
+  {
+    "label": "DRUG",
+    "box": [
+      40,
+      251,
+      189,
+      11
+    ],
+    "text": "Sodium Chloride 0.9%  Flush"
+  },
+  {
+    "label": "DETAILS",
+    "box": [
+      60,
+      267,
+      90,
+      8
+    ],
+    "text": "Voie: intraveineuse"
+  },
+  {
+    "label": "INSTRUCT",
+    "box": [
+      60,
+      280,
+      84,
+      10
+    ],
+    "text": "Posologie: 10 mL    "
+  }
+]
