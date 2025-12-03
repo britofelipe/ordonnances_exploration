@@ -1,12 +1,26 @@
 import os
 import json
+import io
 import random
 import argparse
 from dataclasses import dataclass
 from typing import List, Tuple, Dict
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageFilter
 import pandas as pd
 import re
+
+#   How to run this code:
+#  python generate_ordo_mimic.py \
+#  --csv prescriptions_demo.csv \
+#  --out output_mimic_noisy \
+#  --count 10 \
+#  --blur 2.0 \
+#  --jpeg 1.0 \
+#  --stains 1.0 \
+#  --skew 3.0
+#
+#
+
 
 # --- CONFIGURATION & CONSTANTS ---
 CANDIDATE_FONTS_TYPED = [
@@ -78,11 +92,94 @@ ROUTE_MAP_FR = {
     "INTRATRACHEAL": "intratrachéale"
 }
 
+FORM_MAP_FR = {
+    "VIAL": "flacon",
+    "SYRINGE": "seringue",
+    "BAG": "sac",
+}
+
 def map_route_to_french(route_str: str) -> str:
     if not route_str:
         return ""
     r = route_str.strip().upper()
     return ROUTE_MAP_FR.get(r, route_str.lower())
+
+# --- PAPER / STYLE / NOISE HELPERS ---
+PAPER_CHOICES = ["A5", "A4"]
+STYLE_CHOICES = ["typed", "hand", "mixed"]
+
+def apply_noise(img: Image.Image, blur=0.0, jpeg=0.0, skew=0.0, stains=0.0):
+    """
+    Apply ALL noise types that have value > 0.
+    Now:
+      - skew   : maximum rotation amplitude (degrees)
+      - blur   : approximate blur intensity (maximum radius)
+      - stains : stain intensity (scales the number of stains)
+      - jpeg   : compression artefact intensity
+    """
+
+    # 1) Rotation / skew: whenever skew > 0
+    if skew > 0:
+        ang = random.uniform(-skew, skew)
+        img = img.rotate(ang, resample=Image.BICUBIC, expand=1,
+                         fillcolor=(255, 255, 255))
+
+    # 2) Blur: whenever blur > 0
+    if blur > 0:
+        # radius between 0.5 and blur
+        radius = random.uniform(0.5, max(blur, 0.5))
+        img = img.filter(ImageFilter.GaussianBlur(radius=radius))
+
+    # 3) Stains: whenever stains > 0
+    if stains > 0:
+        dr = ImageDraw.Draw(img)
+        W, H = img.size
+        # number of stains proportional to intensity
+        n_stains = random.randint(1, max(1, int(3 * stains)))
+        for _ in range(n_stains):
+            x = random.randint(10, W - 10)
+            y = random.randint(10, H - 10)
+            r = random.randint(6, 20)
+            col = (random.randint(200, 240),) * 3
+            dr.ellipse((x - r, y - r, x + r, y + r), fill=col, outline=None)
+
+    # 4) JPEG artefacts: whenever jpeg > 0
+    if jpeg > 0:
+        buf = io.BytesIO()
+        # the larger jpeg is, the lower the minimum quality → more artefacts
+        q_min = max(10, int(100 - 60 * jpeg))  # jpeg=1 → q_min ~ 40
+        q = random.randint(q_min, 90)
+        img.save(buf, format="JPEG", quality=q, optimize=True)
+        buf.seek(0)
+        img = Image.open(buf).convert("RGB")
+
+    return img
+
+def sample_noise_from_args(args) -> Dict[str, float]:
+    """
+    For each image, sample a noise configuration.
+    Each CLI arg (blur/jpeg/stains) is treated as a maximum probability,
+    and skew as a maximum rotation amplitude.
+    """
+    def sample_intensity(max_val, min_frac=0.3):
+        if max_val <= 0:
+            return 0.0
+        return random.uniform(min_frac * max_val, max_val)
+
+    return {
+        "blur":   sample_intensity(args.blur),
+        "jpeg":   sample_intensity(args.jpeg),
+        "skew":   sample_intensity(args.skew),
+        "stains": sample_intensity(args.stains),
+    }
+
+def sample_paper_and_style() -> Tuple[str, str]:
+    """
+    Randomly choose a paper format and a global style for a given ordonnance.
+    """
+    paper = random.choice(PAPER_CHOICES)
+    style = random.choice(STYLE_CHOICES)
+    return paper, style
 
 @dataclass
 class Posology:
@@ -134,8 +231,8 @@ def jitter(x, y):
     return x + random.uniform(-1, 1), y + random.uniform(-1, 1)
 
 def sample_name():
-    first = random.choice(["Jean", "Marie", "Pierre", "Sophie", "Lucas", "Camille"])
-    last = random.choice(["Martin", "Bernard", "Dubois", "Robert", "Richard"])
+    first = random.choice(["Jean","Marie","Lucas","Camille","Léa","Paul","Jules","Zoé","Hugo","Anaïs"])
+    last  = random.choice(["Martin","Bernard","Dubois","Thomas","Robert","Petit","Durand","Leroy","Moreau","Simon"])
     return f"{first} {last}"
 
 def sample_date():
@@ -180,7 +277,9 @@ def posology_from_mimic(row) -> Posology:
 
     # Form
     if row.get("form_rx"):
-        form = row["form_rx"]
+        form_raw = row["form_rx"].strip()
+        key = form_raw.upper()
+        form = FORM_MAP_FR.get(key, form_raw)
     else:
         form = infer_form(row.get("prod_strength", ""))
 
@@ -229,8 +328,8 @@ def draw_header(draw, W, y, font):
     draw.text(((W-tw)//2, y), title, fill="black", font=font)
     return y + th + 40
 
-def render_ordo(doc: OrdoDoc, style="typed") -> Tuple[Image.Image, List[Dict]]:
-    img = make_canvas()
+def render_ordo(doc: OrdoDoc, paper="A5", style="typed", noise=None) -> Tuple[Image.Image, List[Dict]]:
+    img = make_canvas(paper=paper)
     draw = ImageDraw.Draw(img)
     W, H = img.size
 
@@ -238,9 +337,15 @@ def render_ordo(doc: OrdoDoc, style="typed") -> Tuple[Image.Image, List[Dict]]:
     font_hand = pick_font(CANDIDATE_FONTS_HAND, 22)
     font_small = pick_font(CANDIDATE_FONTS_TYPED, 16)
 
-    def get_font(is_hand=False, is_small=False):
-        if is_hand: return font_hand
-        return font_small if is_small else font_typed
+    def get_font(is_small=False):
+        # Choose base font according to global style
+        if style == "hand":
+            base = font_hand
+        elif style == "typed":
+            base = font_typed
+        else:  # mixed
+            base = font_hand if random.random() < 0.6 else font_typed
+        return font_small if is_small else base
 
     boxes = []
     y = 50
@@ -291,7 +396,11 @@ def render_ordo(doc: OrdoDoc, style="typed") -> Tuple[Image.Image, List[Dict]]:
         draw.text(jitter(60, y), txt_pos, fill=(50,50,50), font=ft_small)
         tw, th = text_wh(draw, txt_pos, ft_small)
         boxes.append({"label": "INSTRUCT", "box": [60, y, tw, th], "text": txt_pos})
-        y += th + 25
+        y += 25
+
+    # Apply noise if requested
+    if noise:
+        img = apply_noise(img, **noise)
 
     return img, boxes
 
@@ -317,6 +426,17 @@ if __name__ == "__main__":
     parser.add_argument("--csv", required=True, help="Path to MIMIC prescriptions CSV")
     parser.add_argument("--out", default="output_mimic", help="Output directory")
     parser.add_argument("--count", type=int, default=10)
+
+    # Noise / degradation parameters (interpreted as maxima)
+    parser.add_argument("--blur", type=float, default=0.4,
+                        help="Maximum blur probability per image (0-1).")
+    parser.add_argument("--jpeg", type=float, default=0.4,
+                        help="Maximum JPEG artefact probability per image (0-1).")
+    parser.add_argument("--skew", type=float, default=2.0,
+                        help="Maximum rotation (degrees) for skew per image.")
+    parser.add_argument("--stains", type=float, default=0.2,
+                        help="Maximum stains probability per image (0-1).")
+
     args = parser.parse_args()
 
     os.makedirs(args.out, exist_ok=True)
@@ -324,8 +444,12 @@ if __name__ == "__main__":
     print(f"Loaded {len(catalog)} drugs.")
 
     for i in range(args.count):
+        # Random paper / style / noise per image
+        paper_i, style_i = sample_paper_and_style()
+        noise_i = sample_noise_from_args(args)
+
         doc = generate_one(catalog)
-        img, boxes = render_ordo(doc)
+        img, boxes = render_ordo(doc, paper=paper_i, style=style_i, noise=noise_i)
 
         img_path = os.path.join(args.out, f"ordo_{i:04d}.png")
         img.save(img_path)
