@@ -611,10 +611,12 @@ def render_ordo(doc: OrdoDoc, paper="A5", style="typed", noise=None) -> Tuple[Im
         full_text = f"Date: {doc.date_str}"
         tw, th = text_wh(draw, full_text, ft)
         x = W - 40 - tw
-        y_date = y_header_start  # aligned with first header line
+
+        y_date = y_header_start - th - 10
+        y_date = max(20, y_date)
+
         draw.text(jitter(x, y_date), full_text, fill="black", font=ft)
         boxes.append({"label": "DATE", "box": [x, y_date, tw, th], "text": doc.date_str})
-
     y += 20
     draw.line((20, y, W-20, y), fill="grey")
     y += 30
