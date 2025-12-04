@@ -1,12 +1,26 @@
 import os
 import json
+import io
 import random
 import argparse
 from dataclasses import dataclass
-from typing import List, Tuple, Dict
-from PIL import Image, ImageDraw, ImageFont
+from typing import List, Tuple, Dict, Optional
+from PIL import Image, ImageDraw, ImageFont, ImageFilter
 import pandas as pd
 import re
+
+#   How to run this code:
+#  python generate_ordo_mimic.py \
+#  --csv prescriptions_demo.csv \
+#  --out output_mimic_noisy \
+#  --count 10 \
+#  --blur 2.0 \
+#  --jpeg 1.0 \
+#  --stains 1.0 \
+#  --skew 3.0
+#
+#
+
 
 # --- CONFIGURATION & CONSTANTS ---
 CANDIDATE_FONTS_TYPED = [
@@ -78,11 +92,94 @@ ROUTE_MAP_FR = {
     "INTRATRACHEAL": "intratrachéale"
 }
 
+FORM_MAP_FR = {
+    "VIAL": "flacon",
+    "SYRINGE": "seringue",
+    "BAG": "sac",
+}
+
 def map_route_to_french(route_str: str) -> str:
     if not route_str:
         return ""
     r = route_str.strip().upper()
     return ROUTE_MAP_FR.get(r, route_str.lower())
+
+# --- PAPER / STYLE / NOISE HELPERS ---
+PAPER_CHOICES = ["A5", "A4"]
+STYLE_CHOICES = ["typed", "hand", "mixed"]
+
+def apply_noise(img: Image.Image, blur=0.0, jpeg=0.0, skew=0.0, stains=0.0):
+    """
+    Apply ALL noise types that have value > 0.
+    Now:
+      - skew   : maximum rotation amplitude (degrees)
+      - blur   : approximate blur intensity (maximum radius)
+      - stains : stain intensity (scales the number of stains)
+      - jpeg   : compression artefact intensity
+    """
+
+    # 1) Rotation / skew: whenever skew > 0
+    if skew > 0:
+        ang = random.uniform(-skew, skew)
+        img = img.rotate(ang, resample=Image.BICUBIC, expand=1,
+                         fillcolor=(255, 255, 255))
+
+    # 2) Blur: whenever blur > 0
+    if blur > 0:
+        # radius between 0.5 and blur
+        radius = random.uniform(0.5, max(blur, 0.5))
+        img = img.filter(ImageFilter.GaussianBlur(radius=radius))
+
+    # 3) Stains: whenever stains > 0
+    if stains > 0:
+        dr = ImageDraw.Draw(img)
+        W, H = img.size
+        # number of stains proportional to intensity
+        n_stains = random.randint(1, max(1, int(3 * stains)))
+        for _ in range(n_stains):
+            x = random.randint(10, W - 10)
+            y = random.randint(10, H - 10)
+            r = random.randint(6, 20)
+            col = (random.randint(200, 240),) * 3
+            dr.ellipse((x - r, y - r, x + r, y + r), fill=col, outline=None)
+
+    # 4) JPEG artefacts: whenever jpeg > 0
+    if jpeg > 0:
+        buf = io.BytesIO()
+        # the larger jpeg is, the lower the minimum quality → more artefacts
+        q_min = max(10, int(100 - 60 * jpeg))  # jpeg=1 → q_min ~ 40
+        q = random.randint(q_min, 90)
+        img.save(buf, format="JPEG", quality=q, optimize=True)
+        buf.seek(0)
+        img = Image.open(buf).convert("RGB")
+
+    return img
+
+def sample_noise_from_args(args) -> Dict[str, float]:
+    """
+    For each image, sample a noise configuration.
+    Each CLI arg (blur/jpeg/stains) is treated as a maximum probability,
+    and skew as a maximum rotation amplitude.
+    """
+    def sample_intensity(max_val, min_frac=0.3):
+        if max_val <= 0:
+            return 0.0
+        return random.uniform(min_frac * max_val, max_val)
+
+    return {
+        "blur":   sample_intensity(args.blur),
+        "jpeg":   sample_intensity(args.jpeg),
+        "skew":   sample_intensity(args.skew),
+        "stains": sample_intensity(args.stains),
+    }
+
+def sample_paper_and_style() -> Tuple[str, str]:
+    """
+    Randomly choose a paper format and a global style for a given ordonnance.
+    """
+    paper = random.choice(PAPER_CHOICES)
+    style = random.choice(STYLE_CHOICES)
+    return paper, style
 
 @dataclass
 class Posology:
@@ -91,12 +188,15 @@ class Posology:
     duration: str
     route: str
     form: str
+    as_needed: bool = False
+    as_needed_for: str = ""
 
 @dataclass
 class LineItem:
     drug_name: str
     strength: str
     posology: Posology
+    refills: Optional[int] = None
 
 @dataclass
 class OrdoDoc:
@@ -134,13 +234,36 @@ def jitter(x, y):
     return x + random.uniform(-1, 1), y + random.uniform(-1, 1)
 
 def sample_name():
-    first = random.choice(["Jean", "Marie", "Pierre", "Sophie", "Lucas", "Camille"])
-    last = random.choice(["Martin", "Bernard", "Dubois", "Robert", "Richard"])
+    first = random.choice(["Jean","Marie","Lucas","Camille","Léa","Paul","Jules","Zoé","Hugo","Anaïs"])
+    last  = random.choice(["Martin","Bernard","Dubois","Thomas","Robert","Petit","Durand","Leroy","Moreau","Simon"])
     return f"{first} {last}"
 
 def sample_date():
-    d, m = random.randint(1, 28), random.randint(1, 12)
-    return f"{d:02d}/{m:02d}/2024"
+    """
+    Sample a date string, always in day-month-year logical order,
+    but with random formatting (separators or month naming).
+    """
+    d = random.randint(1, 28)
+    m = random.randint(1, 12)
+    y = 2024
+
+    # Different textual formats, all keeping day-month-year order
+    month_names_short = ["janv.", "févr.", "mars", "avr.", "mai", "juin",
+                         "juil.", "août", "sept.", "oct.", "nov.", "déc."]
+
+    fmt = random.choice(["slash", "dash", "dot", "short_year", "text"])
+    if fmt == "slash":
+        return f"{d:02d}/{m:02d}/{y}"
+    elif fmt == "dash":
+        return f"{d:02d}-{m:02d}-{y}"
+    elif fmt == "dot":
+        return f"{d:02d}.{m:02d}.{y}"
+    elif fmt == "short_year":
+        return f"{d:02d}/{m:02d}/{y % 100:02d}"
+    else:  # text month
+        month_txt = month_names_short[m - 1]
+        # e.g. "01 févr. 2024" or "1 févr. 2024"
+        return f"{d:02d} {month_txt} {y}"
 
 # --- POSOLOGY FROM MIMIC ---
 def posology_from_mimic(row) -> Posology:
@@ -180,16 +303,29 @@ def posology_from_mimic(row) -> Posology:
 
     # Form
     if row.get("form_rx"):
-        form = row["form_rx"]
+        form_raw = row["form_rx"].strip()
+        key = form_raw.upper()
+        form = FORM_MAP_FR.get(key, form_raw)
     else:
         form = infer_form(row.get("prod_strength", ""))
+
+    # As needed (PRN)
+    as_needed = False
+    as_needed_for = ""
+    prn_val = row.get("prn", "")
+    if prn_val not in ["", None]:
+        s = str(prn_val).strip().upper()
+        if s in {"1", "Y", "YES", "TRUE", "T"}:
+            as_needed = True
 
     return Posology(
         dose=dose,
         frequency=frequency,
         duration=duration,
         route=route,
-        form=form
+        form=form,
+        as_needed=as_needed,
+        as_needed_for=as_needed_for,
     )
 
 # --- LOAD CSV ---
@@ -211,11 +347,185 @@ def load_catalog_mimic(path: str) -> List[Dict]:
             "doses_per_24_hrs": row.get("doses_per_24_hrs", ""),
             "starttime": row.get("starttime", ""),
             "stoptime": row.get("stoptime", ""),
-            "form_rx": row.get("form_rx", "")
+            "form_rx": row.get("form_rx", ""),
+            "prn": row.get("prn", ""),
+            "refills": row.get("refills", ""),
         }
         catalog.append(entry)
 
     return catalog
+
+# --- FHIR EXPORT HELPERS ---
+
+def frequency_to_timing(freq: str) -> Dict:
+    """
+    Convert a frequency string like '3/j' into a FHIR Timing structure.
+    Returns a dict or None if we can't parse the frequency.
+    """
+    if not freq:
+        return None
+    m = re.match(r"\s*(\d+)\s*/\s*j", freq)
+    if not m:
+        return None
+    f = int(m.group(1))
+    return {
+        "repeat": {
+            "frequency": f,
+            "period": 1,
+            "periodUnit": "d"
+        }
+    }
+
+
+# --- DOSE AND DURATION PARSING HELPERS ---
+def parse_dose_to_quantity(dose: str) -> Optional[Dict]:
+    """
+    Try to parse a dose string like '250 mL' or '1 CAP' into a FHIR Quantity.
+    Returns a dict with 'value' and 'unit', or None if parsing fails.
+    """
+    if not dose:
+        return None
+    m = re.match(r"\s*([0-9]+(?:\.[0-9]+)?)\s+(.+)$", dose)
+    if not m:
+        return None
+    try:
+        value = float(m.group(1))
+    except ValueError:
+        return None
+    unit = m.group(2).strip()
+    return {"value": value, "unit": unit}
+
+
+def duration_to_bounds_duration(duration: str) -> Optional[Dict]:
+    """
+    Parse a duration string like '3 jours' into a FHIR Duration.
+    For now we assume duration is expressed in days.
+    """
+    if not duration:
+        return None
+    m = re.match(r"\s*([0-9]+)", duration)
+    if not m:
+        return None
+    value = int(m.group(1))
+    return {"value": value, "unit": "d"}
+
+
+def lineitem_to_medication_request(doc: OrdoDoc,
+                                   line: LineItem,
+                                   idx: int,
+                                   base_id: str) -> Dict:
+    """
+    Build a FHIR MedicationRequest for a single LineItem of the ordonnance.
+    """
+    # Posology text components
+    poso = line.posology
+
+    # 1) Drug line: name (+ strength in parentheses, like on the image)
+    drug_line = line.drug_name
+    if line.strength:
+        drug_line += f" ({line.strength})"
+    # This will be used as MedicationRequest.medicationCodeableConcept.text
+    med_text = drug_line
+
+    # 2) Details line: Forme / Voie
+    details_segments = []
+    if poso.form:
+        details_segments.append(f"Forme: {poso.form}")
+    if poso.route:
+        details_segments.append(f"Voie: {poso.route}")
+
+    # 3) Posology line: dose / frequency / duration
+    poso_segments = []
+    if poso.dose:
+        poso_segments.append(poso.dose)
+    if poso.frequency:
+        poso_segments.append(poso.frequency)
+    if poso.duration:
+        poso_segments.append(poso.duration)
+
+    # Build a single human-readable text, close to what is written on the ordonnance
+    dosage_text = drug_line
+    if details_segments:
+        dosage_text += " " + " ".join(details_segments)
+    if poso_segments:
+        dosage_text += " Posologie: " + " ".join(poso_segments)
+
+    # Structured timing (if we can parse frequency)
+    timing = frequency_to_timing(poso.frequency)
+
+    dosage_instruction: Dict = {
+        "text": dosage_text,
+        "sequence": idx
+    }
+    if poso.as_needed:
+        dosage_instruction["asNeededBoolean"] = True
+        if poso.as_needed_for:
+            dosage_instruction["asNeededCodeableConcept"] = {"text": poso.as_needed_for}
+    if poso.route:
+        dosage_instruction["route"] = {"text": poso.route}
+    # Structured timing (with boundsDuration if available)
+    timing = frequency_to_timing(poso.frequency)
+    bounds = duration_to_bounds_duration(poso.duration)
+    if bounds:
+        if not timing:
+            timing = {"repeat": {}}
+        if "repeat" not in timing:
+            timing["repeat"] = {}
+        timing["repeat"]["boundsDuration"] = bounds
+    if timing:
+        dosage_instruction["timing"] = timing
+    if poso.dose:
+        dose_entry: Dict = {"doseString": poso.dose}
+        q = parse_dose_to_quantity(poso.dose)
+        if q:
+            dose_entry["doseQuantity"] = q
+        dosage_instruction["doseAndRate"] = [dose_entry]
+
+    mr = {
+        "resourceType": "MedicationRequest",
+        "id": f"{base_id}-med-{idx}",
+        "status": "active",
+        "intent": "order",
+        "subject": {"display": doc.patient_name},
+        "authoredOn": doc.date_str,
+        "requester": {"display": doc.prescriber_name},
+        "medicationCodeableConcept": {
+            "text": med_text
+        },
+        "dosageInstruction": [dosage_instruction],
+        #"note": [{
+        #    "text": "Synthetic ordonnance generated from MIMIC-IV prescriptions"
+        #}]
+    }
+    # Dispense / repeats information, if available
+    if line.refills is not None:
+        mr["dispenseRequest"] = {
+            "numberOfRepeatsAllowed": line.refills
+        }
+    return mr
+
+
+def to_fhir_bundle(doc: OrdoDoc, bundle_id: str = "") -> Dict:
+    """
+    Build a minimal FHIR Bundle (type=collection) containing one
+    MedicationRequest per line of the ordonnance.
+    """
+    if not bundle_id:
+        # deterministic-ish id based on patient + date
+        bundle_id = f"ordo-{abs(hash((doc.patient_name, doc.date_str))) % 10_000_000}"
+
+    entries = []
+    for idx, li in enumerate(doc.lines, start=1):
+        mr = lineitem_to_medication_request(doc, li, idx, bundle_id)
+        entries.append({"resource": mr})
+
+    bundle = {
+        "resourceType": "Bundle",
+        "type": "collection",
+        "id": bundle_id,
+        "entry": entries
+    }
+    return bundle
 
 # --- RENDERING ENGINE ---
 def make_canvas(paper="A5", dpi=150):
@@ -229,8 +539,8 @@ def draw_header(draw, W, y, font):
     draw.text(((W-tw)//2, y), title, fill="black", font=font)
     return y + th + 40
 
-def render_ordo(doc: OrdoDoc, style="typed") -> Tuple[Image.Image, List[Dict]]:
-    img = make_canvas()
+def render_ordo(doc: OrdoDoc, paper="A5", style="typed", noise=None) -> Tuple[Image.Image, List[Dict]]:
+    img = make_canvas(paper=paper)
     draw = ImageDraw.Draw(img)
     W, H = img.size
 
@@ -238,22 +548,72 @@ def render_ordo(doc: OrdoDoc, style="typed") -> Tuple[Image.Image, List[Dict]]:
     font_hand = pick_font(CANDIDATE_FONTS_HAND, 22)
     font_small = pick_font(CANDIDATE_FONTS_TYPED, 16)
 
-    def get_font(is_hand=False, is_small=False):
-        if is_hand: return font_hand
-        return font_small if is_small else font_typed
+    def get_font(is_small=False):
+        # Choose base font according to global style
+        if style == "hand":
+            base = font_hand
+        elif style == "typed":
+            base = font_typed
+        else:  # mixed
+            base = font_hand if random.random() < 0.6 else font_typed
+        return font_small if is_small else base
 
     boxes = []
+
+    # Choose a list style for this ordonnance: numbered, hyphen, or plain paragraph
+    list_style = random.choice(["numbered", "hyphen", "plain"])
+
+    # Choose header alignment and date position
+    header_align = random.choice(["left", "center", "right"])
+    date_position = random.choice(["header", "top_right", "footer"])
+
+    # Choose whether to draw a signature line
+    signature_style = random.choice(["none", "line_only", "label_and_line"])
+
     y = 50
     y = draw_header(draw, W, y, font_typed)
+    y_header_start = y
 
-    # Header
-    for label, text in [("Patient", doc.patient_name), ("Date", doc.date_str)]:
+    # Header: patient, (optionally) date, prescriber (requester)
+    header_fields = [
+        ("Patient", doc.patient_name),
+        ("Prescripteur", doc.prescriber_name),
+    ]
+    # Include date in header only for the "header" date_position
+    if date_position == "header":
+        header_fields.append(("Date", doc.date_str))
+
+    # Randomize the order of header fields
+    random.shuffle(header_fields)
+
+    for label, text in header_fields:
         ft = get_font()
         full_text = f"{label}: {text}"
-        draw.text(jitter(40, y), full_text, fill="black", font=ft)
         tw, th = text_wh(draw, full_text, ft)
-        boxes.append({"label": label, "box": [40, y, tw, th], "text": text})
+
+        # Horizontal alignment of header fields
+        if header_align == "left":
+            x = 40
+        elif header_align == "right":
+            x = W - 40 - tw
+        else:  # center
+            x = (W - tw) // 2
+
+        draw.text(jitter(x, y), full_text, fill="black", font=ft)
+        # store label in uppercase to be more consistent if you later define categories
+        boxes.append({"label": label.upper(), "box": [x, y, tw, th], "text": text})
         y += th + 10
+
+    # If the date is not drawn in the header, draw it either at the top-right or footer later
+    if date_position == "top_right":
+        # Draw date aligned to the top-right, on the first header line
+        ft = get_font()
+        full_text = f"Date: {doc.date_str}"
+        tw, th = text_wh(draw, full_text, ft)
+        x = W - 40 - tw
+        y_date = y_header_start  # aligned with first header line
+        draw.text(jitter(x, y_date), full_text, fill="black", font=ft)
+        boxes.append({"label": "DATE", "box": [x, y_date, tw, th], "text": doc.date_str})
 
     y += 20
     draw.line((20, y, W-20, y), fill="grey")
@@ -263,7 +623,16 @@ def render_ordo(doc: OrdoDoc, style="typed") -> Tuple[Image.Image, List[Dict]]:
     for i, line in enumerate(doc.lines, 1):
         ft = get_font()
         str_txt = f" ({line.strength})" if line.strength else ""
-        txt_main = f"{i}. {line.drug_name}{str_txt}"
+
+        # Prefix according to list style
+        if list_style == "numbered":
+            prefix = f"{i}. "
+        elif list_style == "hyphen":
+            prefix = "- "
+        else:  # plain paragraph, no explicit marker
+            prefix = ""
+
+        txt_main = f"{prefix}{line.drug_name}{str_txt}"
 
         draw.text(jitter(40, y), txt_main, fill="black", font=ft)
         tw, th = text_wh(draw, txt_main, ft)
@@ -291,7 +660,29 @@ def render_ordo(doc: OrdoDoc, style="typed") -> Tuple[Image.Image, List[Dict]]:
         draw.text(jitter(60, y), txt_pos, fill=(50,50,50), font=ft_small)
         tw, th = text_wh(draw, txt_pos, ft_small)
         boxes.append({"label": "INSTRUCT", "box": [60, y, tw, th], "text": txt_pos})
-        y += th + 25
+        y += 25
+
+    # Footer date if requested
+    if date_position == "footer":
+        ft = get_font()
+        full_text = f"Date: {doc.date_str}"
+        tw, th = text_wh(draw, full_text, ft)
+        x = W - 40 - tw
+        y_footer = H - 40 - th
+        draw.text(jitter(x, y_footer), full_text, fill="black", font=ft)
+        boxes.append({"label": "DATE", "box": [x, y_footer, tw, th], "text": doc.date_str})
+
+    # Optional signature line at the bottom-right area
+    if signature_style != "none":
+        line_y = H - 80
+        draw.line((W - 220, line_y, W - 40, line_y), fill="grey", width=2)
+        if signature_style == "label_and_line":
+            ft_sig = get_font(is_small=True)
+            draw.text((W - 220, line_y - 20), "Signature", fill="black", font=ft_sig)
+
+    # Apply noise if requested
+    if noise:
+        img = apply_noise(img, **noise)
 
     return img, boxes
 
@@ -303,10 +694,18 @@ def generate_one(catalog):
 
     for drug in selection:
         pos = posology_from_mimic(drug)
+        refills_raw = drug.get("refills", "")
+        refills: Optional[int] = None
+        if refills_raw not in ["", None]:
+            try:
+                refills = int(float(refills_raw))
+            except Exception:
+                refills = None
         lines.append(LineItem(
             drug_name=drug["drug"],
             strength=drug["prod_strength"],
-            posology=pos
+            posology=pos,
+            refills=refills
         ))
 
     return OrdoDoc(sample_name(), sample_name(), sample_date(), lines)
@@ -317,6 +716,17 @@ if __name__ == "__main__":
     parser.add_argument("--csv", required=True, help="Path to MIMIC prescriptions CSV")
     parser.add_argument("--out", default="output_mimic", help="Output directory")
     parser.add_argument("--count", type=int, default=10)
+
+    # Noise / degradation parameters (interpreted as maxima)
+    parser.add_argument("--blur", type=float, default=0.4,
+                        help="Maximum blur probability per image (0-1).")
+    parser.add_argument("--jpeg", type=float, default=0.4,
+                        help="Maximum JPEG artefact probability per image (0-1).")
+    parser.add_argument("--skew", type=float, default=2.0,
+                        help="Maximum rotation (degrees) for skew per image.")
+    parser.add_argument("--stains", type=float, default=0.2,
+                        help="Maximum stains probability per image (0-1).")
+
     args = parser.parse_args()
 
     os.makedirs(args.out, exist_ok=True)
@@ -324,13 +734,30 @@ if __name__ == "__main__":
     print(f"Loaded {len(catalog)} drugs.")
 
     for i in range(args.count):
-        doc = generate_one(catalog)
-        img, boxes = render_ordo(doc)
+        # Random paper / style / noise per image
+        paper_i, style_i = sample_paper_and_style()
+        noise_i = sample_noise_from_args(args)
 
-        img_path = os.path.join(args.out, f"ordo_{i:04d}.png")
+        # Synthetic ordonnance document
+        doc = generate_one(catalog)
+
+        # Render image + layout boxes
+        img, boxes = render_ordo(doc, paper=paper_i, style=style_i, noise=noise_i)
+
+        # File base name
+        base_name = f"ordo_{i:04d}"
+
+        # Save image
+        img_path = os.path.join(args.out, base_name + ".png")
         img.save(img_path)
 
-        with open(os.path.join(args.out, f"ordo_{i:04d}.json"), "w") as f:
-            json.dump(boxes, f, indent=2)
+        # Save layout / boxes (for OCR / detection ground truth)
+        with open(os.path.join(args.out, base_name + ".json"), "w", encoding="utf-8") as f:
+            json.dump(boxes, f, ensure_ascii=False, indent=2)
+
+        # Build and save FHIR Bundle (LLM ground truth)
+        fhir_bundle = to_fhir_bundle(doc, bundle_id=base_name)
+        with open(os.path.join(args.out, base_name + ".fhir.json"), "w", encoding="utf-8") as f:
+            json.dump(fhir_bundle, f, ensure_ascii=False, indent=2)
 
     print(f"Generated {args.count} ordonnance images in '{args.out}'")
