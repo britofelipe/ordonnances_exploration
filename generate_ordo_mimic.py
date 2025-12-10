@@ -9,6 +9,12 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter
 import pandas as pd
 import re
 
+# --- IMPORTS FOR OCR ---
+import cv2
+import pytesseract
+import numpy as np
+from pdf2image import convert_from_path
+
 #   How to run this code:
 #  python generate_ordo_mimic.py \
 #  --csv prescriptions_demo.csv \
@@ -21,6 +27,59 @@ import re
 #
 #
 
+# ---------------- OCR SERVICE ----------------
+class OCRService:
+    def __init__(self):
+        self.lang = 'fra'
+
+    def process_file(self, file_path: str) -> str:
+        """
+        Ponto de entrada principal: trata PDFs e imagens.
+        Retorna o texto extraído.
+        """
+        ext = file_path.split('.')[-1].lower()
+        extracted_text = ""
+
+        if ext == 'pdf':
+            # Converts PDF list of PIL Images
+            images = convert_from_path(file_path)
+            for i, img in enumerate(images):
+                # PIL -> OpenCV (numpy)
+                open_cv_image = np.array(img)
+                # RGB -> BGR
+                open_cv_image = open_cv_image[:, :, ::-1].copy()
+
+                text = self._process_single_image(open_cv_image)
+                extracted_text += f"\n--- Page {i+1} ---\n{text}"
+        else:
+            # Its an image file (png, jpg, ...)
+            img = cv2.imread(file_path)
+            if img is None:
+                raise ValueError(f"Could not load image at {file_path}")
+            extracted_text = self._process_single_image(img)
+
+        return extracted_text
+
+    def _process_single_image(self, img_cv2) -> str:
+        """
+        Applies vision pre-processing and runs Tesseract.
+        """
+        # 1. Grayscale
+        gray = cv2.cvtColor(img_cv2, cv2.COLOR_BGR2GRAY)
+
+        # 2. Denoising (ruído sal e pimenta)
+        denoised = cv2.medianBlur(gray, 3)
+
+        # 3. Threshold (binarização, Otsu)
+        _, thresh = cv2.threshold(
+            denoised, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU
+        )
+
+        # 4. OCR
+        config = "--psm 6"  # bloco único de texto
+        text = pytesseract.image_to_string(thresh, lang=self.lang, config=config)
+
+        return text.strip()
 
 # --- CONFIGURATION & CONSTANTS ---
 CANDIDATE_FONTS_TYPED = [
@@ -735,6 +794,9 @@ if __name__ == "__main__":
     catalog = load_catalog_mimic(args.csv)
     print(f"Loaded {len(catalog)} drugs.")
 
+    # Instância única do serviço de OCR
+    ocr_service = OCRService()
+
     for i in range(args.count):
         # Random paper / style / noise per image
         paper_i, style_i = sample_paper_and_style()
@@ -752,6 +814,16 @@ if __name__ == "__main__":
         # Save image
         img_path = os.path.join(args.out, base_name + ".png")
         img.save(img_path)
+
+        # Run OCR on the saved image and save extracted text
+        try:
+            ocr_text = ocr_service.process_file(img_path)
+        except Exception as e:
+            ocr_text = f"[OCR ERROR] {e}"
+
+        txt_path = os.path.join(args.out, base_name + ".txt")
+        with open(txt_path, "w", encoding="utf-8") as f:
+            f.write(ocr_text)
 
         # Save layout / boxes (for OCR / detection ground truth)
         with open(os.path.join(args.out, base_name + ".json"), "w", encoding="utf-8") as f:
