@@ -9,7 +9,12 @@ __pycache__/
 *.png
 *.json
 *.out
+*.txt
 /logs
+/toobib-ordo-bert2bert
+/toobib-ordo-bert2bert-template-simplified
+toobib-ordo-bert2bert-template
+*.csv
 
 # Distribution / packaging
 .Python

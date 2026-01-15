@@ -166,6 +166,39 @@ def map_route_to_french(route_str: str) -> str:
 # --- PAPER / STYLE / NOISE HELPERS ---
 PAPER_CHOICES = ["A5", "A4"]
 STYLE_CHOICES = ["typed", "hand", "mixed"]
+# === BACKGROUNDS DE TEMPLATE ===
+TEMPLATE_BACKGROUNDS = [
+    {
+        "name": "bicetre",
+        "path": "templates/template_bicetre.png",
+        "text_area_frac": (0.10, 0.22, 0.95, 0.93),
+    },
+    {
+        "name": "saint_malo",
+        "path": "templates/template_saint_malo.png",
+        "text_area_frac": (0.10, 0.22, 0.95, 0.93),
+    },
+    {
+        "name": "centre_sante_1",
+        "path": "templates/template_centre_sante_1.png",
+        "text_area_frac": (0.10, 0.16, 0.95, 0.86),
+        "date_positions": ["header", "top_right"],  # evita rodapé
+    },
+    {
+        "name": "centre_sante_2",
+        "path": "templates/template_centre_sante_2.png",
+        # evita cabeçalho + selo RPPS à esquerda e deixa o bloco central livre
+        "text_area_frac": (0.10, 0.22, 0.95, 0.93),
+    },
+]
+
+def sample_template_and_style():
+    """
+    Sorteia um background de template e um estilo de fonte.
+    """
+    template_cfg = random.choice(TEMPLATE_BACKGROUNDS)
+    style = random.choice(STYLE_CHOICES)
+    return template_cfg, style
 
 def apply_noise(img: Image.Image, blur=0.0, jpeg=0.0, skew=0.0, stains=0.0):
     """
@@ -293,8 +326,22 @@ def jitter(x, y):
     return x + random.uniform(-1, 1), y + random.uniform(-1, 1)
 
 def sample_name():
-    first = random.choice(["Jean","Marie","Lucas","Camille","Léa","Paul","Jules","Zoé","Hugo","Anaïs"])
-    last  = random.choice(["Martin","Bernard","Dubois","Thomas","Robert","Petit","Durand","Leroy","Moreau","Simon"])
+    first_names = [
+        "Jean", "Marie", "Lucas", "Camille", "Léa", "Paul", "Jules", "Zoé", "Hugo", "Anaïs",
+        "Thomas", "Emma", "Louis", "Chloé", "Nathan", "Manon", "Mathis", "Inès", "Arthur", "Clara",
+        "Gabriel", "Sarah", "Théo", "Elena", "Noah", "Lucie", "Maxime", "Margaux", "Romain", "Julie",
+        "Alexandre", "Nina", "Baptiste", "Élise", "Julien", "Maëlle", "Victor", "Pauline", "Quentin", "Eva"
+    ]
+
+    last_names = [
+        "Martin", "Bernard", "Dubois", "Thomas", "Robert", "Petit", "Durand", "Leroy", "Moreau", "Simon",
+        "Laurent", "Lefebvre", "Roux", "Fournier", "Girard", "Bonnet", "Dupont", "Lambert", "Fontaine", "Rousseau",
+        "Vincent", "Muller", "Blanc", "Guerin", "Boyer", "Garnier", "Chevalier", "Francois", "Lopez", "Fernandez",
+        "Mercier", "Henry", "Renaud", "Marchand", "Barbier", "Picard", "Gaillard", "Perrot", "Charpentier", "Renault"
+    ]
+
+    first = random.choice(first_names)
+    last  = random.choice(last_names)
     return f"{first} {last}"
 
 def sample_date():
@@ -393,7 +440,7 @@ def load_catalog_mimic(path: str) -> List[Dict]:
     df = pd.read_csv(path).fillna("")
 
     catalog = []
-    for _, row in df.iterrows():
+    for row_idx, row in df.iterrows():   # row_idx = índice da linha no CSV original
         if not row.get("drug"):
             continue
 
@@ -409,6 +456,7 @@ def load_catalog_mimic(path: str) -> List[Dict]:
             "form_rx": row.get("form_rx", ""),
             "prn": row.get("prn", ""),
             "refills": row.get("refills", ""),
+            "_row_idx": int(row_idx),   # <-- índice da linha no CSV
         }
         catalog.append(entry)
 
@@ -592,45 +640,141 @@ def make_canvas(paper="A5", dpi=150):
     px = (int(w_mm/25.4*dpi), int(h_mm/25.4*dpi))
     return Image.new("RGB", px, (250, 250, 245))
 
-def draw_header(draw, W, y, font):
+def draw_header(draw, x0, x1, y, font):
     title = "ORDONNANCE"
     tw, th = text_wh(draw, title, font)
-    draw.text(((W-tw)//2, y), title, fill="black", font=font)
-    return y + th + 40
+    area_w = x1 - x0
+    x = x0 + (area_w - tw) // 2
+    draw.text((x, y), title, fill="black", font=font)
 
-def render_ordo(doc: OrdoDoc, paper="A5", style="typed", noise=None) -> Tuple[Image.Image, List[Dict]]:
-    img = make_canvas(paper=paper)
+    title_box = [float(x), float(y), float(tw), float(th)]
+    return y + th + 40, title_box
+
+def render_ordo(doc: OrdoDoc, paper="A5", style="typed",
+                noise=None, template_cfg=None) -> Tuple[Image.Image, List[Dict]]:
+    # Se não houver template, usa canvas em branco A4/A5 como antes
+    if template_cfg is None:
+        img = make_canvas(paper=paper)
+        W, H = img.size
+        # área inteira da página
+        area_x0, area_y0, area_x1, area_y1 = 40, 50, W - 40, H - 80
+    else:
+        # Carrega a imagem de background
+        img = Image.open(template_cfg["path"]).convert("RGB")
+        W, H = img.size
+        fx0, fy0, fx1, fy1 = template_cfg.get(
+            "text_area_frac", (0.40, 0.18, 0.95, 0.92)
+        )
+        area_x0 = int(fx0 * W)
+        area_y0 = int(fy0 * H)
+        area_x1 = int(fx1 * W)
+        area_y1 = int(fy1 * H)
+
+    area_W = area_x1 - area_x0
     draw = ImageDraw.Draw(img)
-    W, H = img.size
 
-    font_typed = pick_font(CANDIDATE_FONTS_TYPED, 22)
-    font_hand = pick_font(CANDIDATE_FONTS_HAND, 22)
-    font_small = pick_font(CANDIDATE_FONTS_TYPED, 16)
+    ref_area_w = 1240.0 * 0.55  # ~largura típica da área editável (0.40->0.95) em templates 1240px
+    scale = max(0.8, area_W / ref_area_w)
+
+    size_main  = max(30, int(36 * scale))
+    size_small = max(24, int(28 * scale))  # pode manter p/ assinatura etc.
+
+    font_typed = pick_font(CANDIDATE_FONTS_TYPED, size_main)
+    font_hand  = pick_font(CANDIDATE_FONTS_HAND,  size_main)
+    font_small = pick_font(CANDIDATE_FONTS_TYPED, size_small)
 
     def get_font(is_small=False):
-        # Choose base font according to global style
         if style == "hand":
             base = font_hand
         elif style == "typed":
             base = font_typed
-        else:  # mixed
+        else:
             base = font_hand if random.random() < 0.6 else font_typed
         return font_small if is_small else base
 
+    def wrap_text_to_width(draw, text, font, max_w):
+        text = str(text).strip()
+        if not text:
+            return [""]
+        words = text.split()
+        lines, cur = [], ""
+
+        def fits(s):  # width check
+            return text_wh(draw, s, font)[0] <= max_w
+
+        for w in words:
+            test = w if not cur else (cur + " " + w)
+            if fits(test):
+                cur = test
+                continue
+
+            if cur:
+                lines.append(cur)
+                cur = ""
+
+            if fits(w):
+                cur = w
+            else:
+                # quebra palavra longa (sem espaços) por caractere
+                chunk = ""
+                for ch in w:
+                    test2 = chunk + ch
+                    if fits(test2):
+                        chunk = test2
+                    else:
+                        if chunk:
+                            lines.append(chunk)
+                        chunk = ch
+                cur = chunk
+
+        if cur:
+            lines.append(cur)
+        return lines
+
+    def draw_wrapped(draw, x, y, text, font, fill, max_w, line_gap=6, do_jitter=True):
+        lines = wrap_text_to_width(draw, text, font, max_w)
+        y_cursor = y
+        minx, miny = 1e9, 1e9
+        maxx, maxy = -1e9, -1e9
+
+        for ln in lines:
+            xj, yj = (jitter(x, y_cursor) if do_jitter else (x, y_cursor))
+            draw.text((xj, yj), ln, fill=fill, font=font)
+            w, h = text_wh(draw, ln, font)
+            minx, miny = min(minx, xj), min(miny, yj)
+            maxx, maxy = max(maxx, xj + w), max(maxy, yj + h)
+            y_cursor += h + line_gap
+
+        y_end = y_cursor - line_gap
+        box = [float(minx), float(miny), float(maxx - minx), float(maxy - miny)]
+        return y_end, box, lines
+
+    def boxes_intersect(a, b, pad=0):
+        ax, ay, aw, ah = a
+        bx, by, bw, bh = b
+        return not (
+            (ax + aw + pad) < (bx - pad) or
+            (bx + bw + pad) < (ax - pad) or
+            (ay + ah + pad) < (by - pad) or
+            (by + bh + pad) < (ay - pad)
+        )
+        
     boxes = []
 
-    # Choose a list style for this ordonnance: numbered, hyphen, or plain paragraph
+    # Escolhas de layout (iguais ao original)
     list_style = random.choice(["numbered", "hyphen", "plain"])
-
-    # Choose header alignment and date position
     header_align = random.choice(["left", "center", "right"])
-    date_position = random.choice(["header", "top_right", "footer"])
-
-    # Choose whether to draw a signature line
+    date_choices = ["header", "top_right", "footer"]
+    if template_cfg and template_cfg.get("date_positions"):
+        date_choices = template_cfg["date_positions"]
+    date_position = random.choice(date_choices)
     signature_style = random.choice(["none", "line_only", "label_and_line"])
 
-    y = 50
-    y = draw_header(draw, W, y, font_typed)
+    # === AQUI começa a desenhar dentro da área em branco ===
+    area_W = area_x1 - area_x0
+    y = area_y0
+
+    y, title_box = draw_header(draw, area_x0, area_x1, y, font_typed)
     y_header_start = y
 
     # Header: patient, (optionally) date, prescriber (requester)
@@ -638,69 +782,82 @@ def render_ordo(doc: OrdoDoc, paper="A5", style="typed", noise=None) -> Tuple[Im
         ("Patient", doc.patient_name),
         ("Prescripteur", doc.prescriber_name),
     ]
-    # Include date in header only for the "header" date_position
     if date_position == "header":
         header_fields.append(("Date", doc.date_str))
 
-    # Randomize the order of header fields
     random.shuffle(header_fields)
 
     for label, text in header_fields:
         ft = get_font()
         full_text = f"{label}: {text}"
-        tw, th = text_wh(draw, full_text, ft)
 
-        # Horizontal alignment of header fields
+        # pré-wrap para calcular alinhamento por largura máxima das linhas
+        tmp_lines = wrap_text_to_width(draw, full_text, ft, area_W)
+        max_line_w = max(text_wh(draw, ln, ft)[0] for ln in tmp_lines) if tmp_lines else 0
+
         if header_align == "left":
-            x = 40
+            x = area_x0
         elif header_align == "right":
-            x = W - 40 - tw
-        else:  # center
-            x = (W - tw) // 2
+            x = area_x1 - max_line_w
+        else:
+            x = area_x0 + (area_W - max_line_w) // 2
 
-        draw.text(jitter(x, y), full_text, fill="black", font=ft)
-        # store label in uppercase to be more consistent if you later define categories
-        boxes.append({"label": label.upper(), "box": [x, y, tw, th], "text": text})
-        y += th + 10
+        y_end, box, _ = draw_wrapped(draw, x, y, full_text, ft, "black", area_x1 - x, line_gap=6)
+        boxes.append({"label": label.upper(), "box": box, "text": str(text)})
+        y = y_end + 10
 
-    # If the date is not drawn in the header, draw it either at the top-right or footer later
+    # Data no topo direito dentro da área
     if date_position == "top_right":
-        # Draw date aligned to the top-right, on the first header line
-        ft = get_font()
+        ft = get_font(is_small=True)  # data menor para não competir com o título
         full_text = f"Date: {doc.date_str}"
         tw, th = text_wh(draw, full_text, ft)
-        x = W - 40 - tw
 
-        y_date = y_header_start - th - 10
-        y_date = max(20, y_date)
+        x = area_x1 - tw
+        # tenta alinhar com o título primeiro
+        y_date = title_box[1]
 
-        draw.text(jitter(x, y_date), full_text, fill="black", font=ft)
+        date_box = [float(x), float(y_date), float(tw), float(th)]
+        # se colidir com o título, joga para baixo do título (dentro do "gap" de 40px)
+        if boxes_intersect(date_box, title_box, pad=6):
+            y_date = title_box[1] + title_box[3] + 6
+
+        # garante que fica acima do começo dos headers (Patient/Prescripteur)
+        y_date = min(y_date, y_header_start - th - 4)
+        y_date = max(area_y0, y_date)
+
+        # aqui eu recomendo NÃO aplicar jitter na data, pra não reintroduzir colisão
+        draw.text((x, y_date), full_text, fill="black", font=ft)
         boxes.append({"label": "DATE", "box": [x, y_date, tw, th], "text": doc.date_str})
+
     y += 20
-    draw.line((20, y, W-20, y), fill="grey")
+    # linha separadora só dentro da área
+    draw.line((area_x0, y, area_x1, y), fill="grey")
     y += 30
 
-    # Line Items
+    # === LINHAS DE MEDICAMENTOS ===
     for i, line in enumerate(doc.lines, 1):
         ft = get_font()
         str_txt = f" ({line.strength})" if line.strength else ""
 
-        # Prefix according to list style
         if list_style == "numbered":
             prefix = f"{i}. "
         elif list_style == "hyphen":
             prefix = "- "
-        else:  # plain paragraph, no explicit marker
+        else:
             prefix = ""
 
+        # --- linha do medicamento (WRAP) ---
         txt_main = f"{prefix}{line.drug_name}{str_txt}"
+        x_main = area_x0
+        y_end, box_main, _ = draw_wrapped(
+            draw, x_main, y, txt_main, ft, "black",
+            max_w=(area_x1 - x_main),
+            line_gap=6
+        )
+        boxes.append({"label": "DRUG", "box": box_main, "text": line.drug_name})
+        y = y_end + 8
 
-        draw.text(jitter(40, y), txt_main, fill="black", font=ft)
-        tw, th = text_wh(draw, txt_main, ft)
-        boxes.append({"label": "DRUG", "box": [40, y, tw, th], "text": line.drug_name})
-        y += th + 5
-
-        # Form & Route
+        # --- Forme / Voie (MESMO TAMANHO E COR do medicamento) ---
         details_parts = []
         if line.posology.form:
             details_parts.append(f"Forme: {line.posology.form}")
@@ -708,32 +865,49 @@ def render_ordo(doc: OrdoDoc, paper="A5", style="typed", noise=None) -> Tuple[Im
             details_parts.append(f"Voie: {line.posology.route}")
 
         if details_parts:
-            ft_small = get_font(is_small=True)
             txt_det = "   ".join(details_parts)
-            draw.text(jitter(60, y), txt_det, fill=(50,50,50), font=ft_small)
-            tw, th = text_wh(draw, txt_det, ft_small)
-            boxes.append({"label": "DETAILS", "box": [60, y, tw, th], "text": txt_det})
-            y += th + 5
+            x_det = area_x0 + 20
+            y_end, box_det, _ = draw_wrapped(
+                draw, x_det, y, txt_det, ft, "black",
+                max_w=(area_x1 - x_det),
+                line_gap=6
+            )
+            boxes.append({"label": "DETAILS", "box": box_det, "text": txt_det})
+            y = y_end + 8
 
-        # Posology
-        ft_small = get_font(is_small=True)
-        txt_pos = f"Posologie: {line.posology.dose}  {line.posology.frequency}  {line.posology.duration}"
-        draw.text(jitter(60, y), txt_pos, fill=(50,50,50), font=ft_small)
-        tw, th = text_wh(draw, txt_pos, ft_small)
-        boxes.append({"label": "INSTRUCT", "box": [60, y, tw, th], "text": txt_pos})
-        y += 25
+        # --- Posologia (MESMO TAMANHO E COR do medicamento) ---
+        txt_pos = f"Posologie: {line.posology.dose}  {line.posology.frequency}  {line.posology.duration}".strip()
+        x_pos = area_x0 + 20
+        y_end, box_pos, _ = draw_wrapped(
+            draw, x_pos, y, txt_pos, ft, "black",
+            max_w=(area_x1 - x_pos),
+            line_gap=6
+        )
+        boxes.append({"label": "INSTRUCT", "box": box_pos, "text": txt_pos})
+        y = y_end + 18
 
-    # Footer date if requested
+        # (não estamos controlando estritamente se passa de area_y1, mas em geral cabe bem)
+
+    # Data no rodapé (fora ou dentro da área: aqui uso a largura total)
     if date_position == "footer":
-        ft = get_font()
+        ft = get_font(is_small=True) if template_cfg is not None else get_font()
         full_text = f"Date: {doc.date_str}"
         tw, th = text_wh(draw, full_text, ft)
-        x = W - 40 - tw
-        y_footer = H - 40 - th
-        draw.text(jitter(x, y_footer), full_text, fill="black", font=ft)
-        boxes.append({"label": "DATE", "box": [x, y_footer, tw, th], "text": doc.date_str})
 
-    # Optional signature line at the bottom-right area
+        if template_cfg is not None:
+            # coloca no canto inferior direito DENTRO da área editável (não no rodapé global)
+            pad = 10
+            x = area_x1 - tw - pad
+            y_footer = area_y1 - th - pad
+        else:
+            x = W - 40 - tw
+            y_footer = H - 40 - th
+
+        xj, yj = jitter(x, y_footer)
+        draw.text((xj, yj), full_text, fill="black", font=ft)
+        boxes.append({"label": "DATE", "box": [xj, yj, tw, th], "text": doc.date_str})
+
+    # Linha de assinatura como antes (no canto inferior direito global)
     if signature_style != "none":
         line_y = H - 80
         draw.line((W - 220, line_y, W - 40, line_y), fill="grey", width=2)
@@ -741,18 +915,18 @@ def render_ordo(doc: OrdoDoc, paper="A5", style="typed", noise=None) -> Tuple[Im
             ft_sig = get_font(is_small=True)
             draw.text((W - 220, line_y - 20), "Signature", fill="black", font=ft_sig)
 
-    # Apply noise if requested
+    # Noise na imagem final (texto + template)
     if noise:
         img = apply_noise(img, **noise)
 
     return img, boxes
 
 # --- IMAGE GENERATION ---
-def generate_one(catalog):
-    n = random.randint(1, 4)
-    selection = random.sample(catalog, k=min(n, len(catalog)))
+def build_doc_from_selection(selection: List[Dict]) -> OrdoDoc:
+    """
+    Cria um OrdoDoc a partir de uma lista de entries do catálogo.
+    """
     lines = []
-
     for drug in selection:
         pos = posology_from_mimic(drug)
         refills_raw = drug.get("refills", "")
@@ -771,12 +945,61 @@ def generate_one(catalog):
 
     return OrdoDoc(sample_name(), sample_name(), sample_date(), lines)
 
+
+def generate_doc_from_anchor(anchor_entry: Dict, catalog_segment: List[Dict]) -> OrdoDoc:
+    """
+    Gera uma ordonnance onde:
+      - anchor_entry é garantidamente um dos medicamentos
+      - opcionalmente adiciona mais alguns meds do mesmo segmento, aleatórios
+    """
+    # número total de medicamentos nesta ordonnance (1 a 4)
+    n = random.randint(1, 4)
+
+    # outros candidatos (do mesmo segmento), exceto o anchor
+    others = [e for e in catalog_segment if e is not anchor_entry]
+
+    extra = []
+    if n > 1 and len(others) > 0:
+        k = min(n - 1, len(others))
+        extra = random.sample(others, k=k)
+
+    selection = [anchor_entry] + extra
+    return build_doc_from_selection(selection)
+
 # --- MAIN ---
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--csv", required=True, help="Path to MIMIC prescriptions CSV")
     parser.add_argument("--out", default="output_mimic", help="Output directory")
-    parser.add_argument("--count", type=int, default=10)
+
+    # NOVO: intervalo de linhas do CSV (índice da linha no arquivo original, 0-based)
+    parser.add_argument(
+        "--start_idx",
+        type=int,
+        default=0,
+        help="Índice (0-based) da primeira linha do CSV a ser usada (inclusive)."
+    )
+    parser.add_argument(
+        "--end_idx",
+        type=int,
+        default=None,
+        help="Índice (0-based) da última linha do CSV a ser usada (exclusivo). "
+             "Se None, vai até o final do CSV."
+    )
+    parser.add_argument(
+        "--only_train",
+        action="store_true",
+        help="Se definido, salva apenas TXT (OCR) e FHIR (LLM ground truth), "
+             "apagando as imagens depois do OCR e não salvando o JSON de boxes."
+    )
+
+    # Mantemos count como limite máximo de ordonnances dentro desse intervalo
+    parser.add_argument(
+        "--count",
+        type=int,
+        default=10,
+        help="Número máximo de ordonnances a gerar dentro do intervalo [start_idx, end_idx)."
+    )
 
     # Noise / degradation parameters (interpreted as maxima)
     parser.add_argument("--blur", type=float, default=0.4,
@@ -792,26 +1015,58 @@ if __name__ == "__main__":
 
     os.makedirs(args.out, exist_ok=True)
     catalog = load_catalog_mimic(args.csv)
-    print(f"Loaded {len(catalog)} drugs.")
+    print(f"Loaded {len(catalog)} drugs (com linhas válidas).")
 
     # Instância única do serviço de OCR
     ocr_service = OCRService()
 
-    for i in range(args.count):
-        # Random paper / style / noise per image
-        paper_i, style_i = sample_paper_and_style()
+    # --- Selecionar intervalo do CSV pelo _row_idx ---
+    start_idx = args.start_idx
+    end_idx = args.end_idx
+
+    if end_idx is None:
+        # Se não foi dado, vai até a maior linha observada + 1
+        max_row = max(e["_row_idx"] for e in catalog) if catalog else -1
+        end_idx = max_row + 1
+
+    # Filtra só as entradas cujo _row_idx está em [start_idx, end_idx)
+    segment = [e for e in catalog if start_idx <= e["_row_idx"] < end_idx]
+
+    if not segment:
+        print(f"Nenhuma linha com drug no intervalo [{start_idx}, {end_idx}). Nada a fazer.")
+        exit(0)
+
+    print(f"Usando linhas do CSV no intervalo [{start_idx}, {end_idx}) → {len(segment)} entradas válidas.")
+
+    # Quantas ordonnances vamos gerar neste intervalo?
+    num_docs = min(args.count, len(segment))
+    # Vamos pegar as primeiras num_docs entradas do segmento, em ordem de linha
+    segment_sorted = sorted(segment, key=lambda e: e["_row_idx"])
+    selected_entries = segment_sorted[:num_docs]
+
+    for entry in selected_entries:
+        row_idx = entry["_row_idx"]  # índice da linha no CSV original
+
+        # Sorteia template / estilo / ruído por imagem
+        template_cfg, style_i = sample_template_and_style()
         noise_i = sample_noise_from_args(args)
 
-        # Synthetic ordonnance document
-        doc = generate_one(catalog)
+        # Synthetic ordonnance document (ancorada nesta linha do CSV)
+        doc = generate_doc_from_anchor(entry, segment)
 
-        # Render image + layout boxes
-        img, boxes = render_ordo(doc, paper=paper_i, style=style_i, noise=noise_i)
+        # File base name: usa o índice da linha → não sobrescreve entre rodadas
+        base_name = f"ordo_{row_idx:06d}"
 
-        # File base name
-        base_name = f"ordo_{i:04d}"
+        # Render image + layout boxes, usando o template como background
+        img, boxes = render_ordo(
+            doc,
+            paper="A4",              # irrelevante quando template_cfg != None
+            style=style_i,
+            noise=noise_i,
+            template_cfg=template_cfg,
+        )
 
-        # Save image
+        # --- IMAGEM: necessária para OCR, mas pode ser apagada depois ---
         img_path = os.path.join(args.out, base_name + ".png")
         img.save(img_path)
 
@@ -825,13 +1080,23 @@ if __name__ == "__main__":
         with open(txt_path, "w", encoding="utf-8") as f:
             f.write(ocr_text)
 
-        # Save layout / boxes (for OCR / detection ground truth)
-        with open(os.path.join(args.out, base_name + ".json"), "w", encoding="utf-8") as f:
-            json.dump(boxes, f, ensure_ascii=False, indent=2)
+        # Save layout / boxes (for OCR / detection ground truth) – só se NÃO for only_train
+        if not args.only_train:
+            with open(os.path.join(args.out, base_name + ".json"), "w", encoding="utf-8") as f:
+                json.dump(boxes, f, ensure_ascii=False, indent=2)
 
-        # Build and save FHIR Bundle (LLM ground truth)
+        # Build and save FHIR Bundle (LLM ground truth) – sempre salva
         fhir_bundle = to_fhir_bundle(doc, bundle_id=base_name)
         with open(os.path.join(args.out, base_name + ".fhir.json"), "w", encoding="utf-8") as f:
             json.dump(fhir_bundle, f, ensure_ascii=False, indent=2)
 
-    print(f"Generated {args.count} ordonnance images in '{args.out}'")
+        # Se for only_train, apagamos a imagem pra não lotar disco
+        if args.only_train:
+            try:
+                os.remove(img_path)
+            except OSError:
+                pass
+
+    print(f"Generated {num_docs} ordonnances in '{args.out}' "
+          f"for CSV lines [{start_idx}, {end_idx}) "
+          f"(only_train={args.only_train})")

@@ -31,6 +31,11 @@ source activate bert_env
 
 # Display the installed packages using the conda install python interpreter
 python -m pip list
+#pip install -r ../requirements.txt 
+# You can also trigger "conda install ..." commands
+#conda install -c conda-forge tesseract
+#conda install -c conda-forge tesseract-data-fra
+#which tesseract
 
 #tesseract --list-langs
 python finetuning_bert_val_test.py

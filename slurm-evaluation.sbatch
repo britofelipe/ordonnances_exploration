@@ -1,8 +1,8 @@
 #!/bin/bash
 
-#SBATCH --job-name=bert
+#SBATCH --job-name=bert-ev
 #SBATCH --nodes=1
-#SBATCH --partition=gpu_inter
+#SBATCH --partition=gpu_prod_long
 #SBATCH --output=logs/slurm-%j.out
 
 echo "Running on $(hostname)"
@@ -33,4 +33,4 @@ source activate bert_env
 python -m pip list
 
 #tesseract --list-langs
-python bert_evaluation.py
+python bert_evaluation_struct.py

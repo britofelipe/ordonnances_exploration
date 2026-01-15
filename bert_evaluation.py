@@ -18,7 +18,7 @@ from transformers.trainer_utils import get_last_checkpoint
 # 1. Carregar pares txt + FHIR
 # =============================
 
-DATA_DIR = Path("output_mimic_fhir_ocr")  # mesmo diretório do treino
+DATA_DIR = Path("output_mimic_fhir_ocr_template_demo_simplified")  # mesmo diretório do treino
 
 def load_one_pair(txt_path: Path):
     json_path = txt_path.with_suffix(".fhir.json")
@@ -63,7 +63,7 @@ print("train:", len(train_ds), "val:", len(val_ds), "test:", len(test_ds))
 # 3. Carregar último checkpoint
 # =============================
 
-output_dir = "./toobib-ordo-bert2bert"
+output_dir = "./toobib-ordo-bert2bert-template-simplified"
 
 last_checkpoint = get_last_checkpoint(output_dir)
 if last_checkpoint is None:
@@ -135,8 +135,25 @@ training_args = Seq2SeqTrainingArguments(
 
 def compute_metrics(eval_pred):
     preds, labels = eval_pred
+
+    # Em seq2seq com predict_with_generate=True, às vezes preds vem como tuple
+    if isinstance(preds, tuple):
+        preds = preds[0]
+
+    # Garante que são arrays NumPy inteiros
+    preds = np.asarray(preds, dtype=np.int64)
+    labels = np.asarray(labels, dtype=np.int64)
+
+    # Sanitize: remove valores inválidos de preds (negativos ou >= vocab_size)
+    vocab_size = tokenizer.vocab_size
+    preds = np.where((preds < 0) | (preds >= vocab_size),
+                     tokenizer.pad_token_id,
+                     preds)
+
+    # Nos labels, troca -100 por pad_token_id para poder decodificar
     labels = np.where(labels != -100, labels, tokenizer.pad_token_id)
 
+    # Agora podemos decodificar com segurança
     pred_str = tokenizer.batch_decode(preds, skip_special_tokens=True)
     label_str = tokenizer.batch_decode(labels, skip_special_tokens=True)
 
@@ -168,9 +185,11 @@ print(test_metrics)
 # 7. Inspecionar alguns exemplos do TESTE
 # =============================
 
-num_examples = 10  # mude se quiser mais/menos exemplos
+num_examples = 20  # mude se quiser mais/menos exemplos
 rng = np.random.default_rng(0)  # seed fixa para reproduzir sempre os mesmos
 indices = rng.choice(len(test_ds), size=num_examples, replace=False)
+
+device = model.device  # cpu ou cuda, conforme o Trainer colocou
 
 print("\n== Exemplos de saídas no TESTE ==")
 for i, idx in enumerate(indices, start=1):
@@ -185,6 +204,9 @@ for i, idx in enumerate(indices, start=1):
         truncation=True,
         max_length=MAX_INPUT_LEN,
     )
+    # garantir que tudo está no mesmo device que o modelo
+    inputs = {k: v.to(device) for k, v in inputs.items()}
+
     with torch.no_grad():
         generated_ids = model.generate(
             **inputs,
@@ -199,7 +221,7 @@ for i, idx in enumerate(indices, start=1):
 
     print(f"\n----- Exemplo {i} (idx={idx}) -----")
     print("INPUT (OCR):")
-    print(input_text[:600])  # corta se ficar gigante
+    print(input_text[:600])
     print("\nTARGET (FHIR JSON canonizado):")
     print(target_text[:600])
     print("\nPREDICTION (modelo):")
