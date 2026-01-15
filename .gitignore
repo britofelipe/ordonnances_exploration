@@ -231,3 +231,6 @@ __marimo__/
 /.vscode
 
 .DS_Store
+
+# Dataset
+output_mimic_fhir_ocr/
