@@ -236,3 +236,4 @@ __marimo__/
 # Dataset
 output_mimic_fhir_ocr/
 ordo_imgs/
+.slurm_email

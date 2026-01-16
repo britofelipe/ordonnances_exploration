@@ -23,7 +23,7 @@ from src.generation.generate_ordo_mimic import Posology, LineItem, OrdoDoc, to_f
 # 1. Carregar pares txt + FHIR
 # =============================
 
-DATA_DIR = Path("../../output_mimic_fhir_ocr_template_demo_simplified")  # ajuste para o diretório real
+DATA_DIR = Path("../generation/output_treino")  # path relative to this script
 
 def ordo_to_linear_text(doc: OrdoDoc) -> str:
     lines = []
@@ -486,8 +486,8 @@ def ordo_txt_to_fhir_json(txt: str):
 
     return gen_text, fhir_bundle
 
-# exemplo: mesma ordo_0002
-with open("output_mimic_fhir_ocr_template_demo_simplified/ordo_0002.txt", encoding="utf-8") as f:
+# exemplo: mesmo ordo_000000
+with open("../generation/output_treino/ordo_000000.txt", encoding="utf-8") as f:
     txt = f.read()
 linear_str, fhir = ordo_txt_to_fhir_json(txt)
 

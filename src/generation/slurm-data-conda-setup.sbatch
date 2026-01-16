@@ -3,7 +3,7 @@
 #SBATCH --job-name=condaEnvSetup
 #SBATCH --nodes=1
 #SBATCH --partition=gpu_prod_long
-#SBATCH --time=1:00:00
+#SBATCH --output=logs/slurm-%j.out
 
 # Ensure module is visible 
 source /etc/profile
@@ -16,8 +16,13 @@ module load anaconda3/2022.10/gcc-13.1.0
 # that will interfer with the conda env
 export PYTHONNOUSERSITE=1
 
+# Deactivate any inherited environment (prevents "cannot remove current env" error)
+source deactivate || conda deactivate || true
+
+# Remove env if exists (to force clean install)
+conda env remove -n ordonnances -y || true
 # Create the environment using python 3.9
-conda create --name ordonnances python=3.9 --force
+conda create --name ordonnances python=3.9 -y
 
 # Activate the environment
 source activate ordonnances
@@ -31,8 +36,13 @@ pip install --upgrade pip setuptools wheel
 #pip install "unsloth[cu121-torch230] @ git+https://github.com/unslothai/unsloth.git"
 #pip install --no-deps "xformers<0.0.27" "trl<0.9.0" peft accelerate bitsandbytes
 #pip install datasets pdf2image
-pip install -r requirements.txt 
-# You can also trigger "conda install ..." commands
-conda install -c conda-forge tesseract
-conda install -c conda-forge tesseract-data-fra
+pip install -r ../../requirements.txt
+
+# Install Tesseract (binaries)
+conda install -c conda-forge tesseract -y
+
+# Install French data (manual download often more reliable on conda-forge)
+TESSDATA_PREFIX=$CONDA_PREFIX/share/tessdata
+wget https://github.com/tesseract-ocr/tessdata/raw/main/fra.traineddata -P $TESSDATA_PREFIX/
+
 which tesseract
