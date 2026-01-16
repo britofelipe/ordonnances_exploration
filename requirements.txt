@@ -1,0 +1,26 @@
+# Python dependencies
+# Install with: pip install -r requirements.txt
+
+transformers
+datasets
+torch
+pandas
+pillow
+scikit-learn
+numpy
+
+# OCR utilities
+opencv-python-headless
+pytesseract
+pdf2image
+
+# --- SYSTEM REQUIREMENTS (Tesseract) ---
+# This project requires Tesseract OCR installed on the system.
+#
+# Ubuntu/Debian:
+#   sudo apt install tesseract-ocr tesseract-ocr-fra
+#
+# Conda (recommended):
+#   conda install -c conda-forge tesseract
+#   # For French data (if package 'tesseract-data-fra' is unavailable):
+#   # wget https://github.com/tesseract-ocr/tessdata/raw/main/fra.traineddata -P $CONDA_PREFIX/share/tessdata/
