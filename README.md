@@ -1,66 +1,101 @@
-# Ordonnances Exploration Project
+# Projet d'Exploration d'Ordonnances
 
-Este projeto foca na geração de prescrições médicas sintéticas (ordonnances) e no treinamento de modelos para extração estruturada de informações (OCR -> FHIR JSON).
+Ce projet se concentre sur la génération d'ordonnances médicales synthétiques et sur l'entraînement de modèles pour l'extraction structurée d'informations (OCR -> FHIR JSON).
 
-## Estrutura do Projeto
+## Structure du Projet
 
-O projeto é dividido em geração de dados, treinamento e avaliação.
+Le projet a été réorganisé pour séparer clairement la génération, l'entraînement et l'évaluation.
 
-### 1. Geração de Dados Sintéticos
+```text
+.
+├── src/
+│   ├── generation/     # Scripts de génération de données
+│   ├── training/       # Scripts d'entraînement (Fine-tuning)
+│   └── evaluation/     # Scripts d'évaluation
+├── data/               # Données (CSV, Templates)
+└── old/                # Fichiers archivés/légacy
+```
 
-O script principal para geração de dados modernos é `generate_ordo_mimic.py`.
-Ele utiliza:
-- Dados seed do dataset MIMIC-IV (via CSV).
-- Templates de fundo reais (em `templates/`).
-- Simulação de escrita manual e digitada com várias fontes.
-- Aplicação de ruídos (blur, skew, manchas, compressão).
+## Utilisation
 
-**Como usar:**
+### 1. Génération de Données Synthétiques
+
+Le script principal est `generate_ordo_mimic.py`. Il utilise des données du dataset MIMIC-IV et des templates de fond pour créer des images réalistes.
+
+**Emplacement :** `src/generation/`
+
+**Comment l'utiliser :**
+Il est recommandé d'exécuter le script depuis son répertoire pour garantir que les chemins relatifs (vers `../../data`) fonctionnent correctement.
+
 ```bash
+cd src/generation
 python generate_ordo_mimic.py \
-  --csv prescriptions_demo.csv \
-  --out output_folder \
   --count 100 \
   --blur 0.5 \
-  --skew 2.0
+  --skew 2.0 \
+  --out output_folder
 ```
-Isso gerará imagens (`.png`), anotações FHIR (`.fhir.json`) e um arquivo de anotações COCO.
 
-> **Nota:** Existe um script mais antigo/básico `generate_synthetic_ordonnances.py` (usado por `generate_all.sh`), que gera dados puramente aleatórios sem base no MIMIC. Para o workflow de treinamento atual, prefira usar `generate_ordo_mimic.py`.
+> **Note :** Le fichier CSV d'entrée par défaut est configuré pour chercher dans `../../data/prescriptions_demo.csv`.
 
-### 2. Treinamento (Finetuning)
-
-O script `finetuning_bert_val_test.py` realiza o finetuning de um modelo Camembert (BERT francês) em arquitetura Encoder-Decoder (BERT2BERT) para converter o texto extraído (OCR) em formato estruturado.
-
-**Como usar:**
-1. Certifique-se de ter gerado os dados em uma pasta (ex: `output_mimic_fhir_ocr_template_demo_simplified`).
-2. Ajuste a variável `DATA_DIR` no script `finetuning_bert_val_test.py` se necessário.
-3. Execute:
+Pour lancer sur le cluster SLURM :
 ```bash
+cd src/generation
+sbatch slurm-ordo-gen.sbatch
+```
+
+### 2. Entraînement (Fine-tuning)
+
+Les scripts d'entraînement permettent d'affiner un modèle (ex: Camembert BERT2BERT) pour convertir le texte OCR en format FHIR structuré.
+
+**Emplacement :** `src/training/`
+
+**Fichiers principaux :**
+- `finetuning_bert_val_test.py` : Script principal (BERT).
+- `train_flan_t5_small.py` : Alternative utilisant Flan-T5.
+
+**Comment l'utiliser :**
+```bash
+cd src/training
 python finetuning_bert_val_test.py
 ```
-O script separam, automaticamente, train/val/test, tokeniza os dados e inicia o treinamento com `Seq2SeqTrainer`. O modelo final será salvo em `./toobib-ordo-bert2bert`.
+Assurez-vous d'avoir ajusté la variable `DATA_DIR` dans le script si vos données générées ne sont pas dans le dossier par défaut.
 
-### 3. Avaliação
-
-O script `bert_evaluation.py` carrega o modelo treinado e avalia no conjunto de teste separado, reportando métricas "Exact Match" e exibindo exemplos de gerações.
-
-**Como usar:**
+Pour lancer sur le cluster SLURM :
 ```bash
+cd src/training
+sbatch slurm-finetuning.sbatch
+```
+
+### 3. Évaluation
+
+Ces scripts évaluent la performance du modèle sur un jeu de test, en comparant la sortie prédite avec le JSON attendu.
+
+**Emplacement :** `src/evaluation/`
+
+**Fichiers principaux :**
+- `bert_evaluation.py` : Évaluation standard.
+- `bert_evaluation_struct.py` : Évaluation plus robuste.
+
+**Comment l'utiliser :**
+```bash
+cd src/evaluation
 python bert_evaluation.py
 ```
 
-### 4. Exploração de Dados (Legacy)
+Pour lancer sur le cluster SLURM :
+```bash
+cd src/evaluation
+sbatch slurm-evaluation.sbatch
+```
 
-- `main.ipynb`: Notebook exploratório usado para analisar o dataset QUAERO (corpus médico francês real). Pode ser útil para criar baselines ou entender o domínio, mas não é usado diretamente no pipeline sintético principal.
+## Dépendances
 
-## Dependências
-
-Principais bibliotecas necessárias (verificar imports):
+Les principales bibliothèques (voir `requirements.txt` ou scripts de setup conda) incluent :
 - `transformers`
 - `datasets`
 - `torch`
 - `Pillow` (PIL)
 - `pandas`
 - `numpy`
-- `scikit-learn` (opcional)
+- `scikit-learn`
