@@ -195,8 +195,17 @@ TEMPLATE_BACKGROUNDS = [
 def sample_template_and_style():
     """
     Sorteia um background de template e um estilo de fonte.
+    Se nenhum arquivo de template existir localmente, retorna None para usar canvas em branco.
     """
-    template_cfg = random.choice(TEMPLATE_BACKGROUNDS)
+    # Filtra apenas templates que existem no disco
+    available = [t for t in TEMPLATE_BACKGROUNDS if os.path.exists(t["path"])]
+
+    if not available:
+        # Fallback: sem template (vai gerar fundo branco no render_ordo)
+        template_cfg = None
+    else:
+        template_cfg = random.choice(available)
+
     style = random.choice(STYLE_CHOICES)
     return template_cfg, style
 
@@ -239,7 +248,7 @@ def apply_noise(img: Image.Image, blur=0.0, jpeg=0.0, skew=0.0, stains=0.0):
     if jpeg > 0:
         buf = io.BytesIO()
         # the larger jpeg is, the lower the minimum quality → more artefacts
-        q_min = max(10, int(100 - 60 * jpeg))  # jpeg=1 → q_min ~ 40
+        q_min = min(90, max(10, int(100 - 60 * jpeg)))  # jpeg=1 -> q_min ~ 40; jpeg=0 -> q_min=90
         q = random.randint(q_min, 90)
         img.save(buf, format="JPEG", quality=q, optimize=True)
         buf.seek(0)
@@ -318,9 +327,18 @@ def pick_font(candidates, size):
 
 def text_wh(draw, text, font):
     if hasattr(draw, "textbbox"):
-        l, t, r, b = draw.textbbox((0, 0), text, font=font)
-        return (r - l), (b - t)
-    return draw.textsize(text, font=font)
+        try:
+            l, t, r, b = draw.textbbox((0, 0), text, font=font)
+            return (r - l), (b - t)
+        except ValueError:
+            # Fallback for bitmap fonts (load_default result) which don't support textbbox
+            pass
+    
+    if hasattr(draw, "textsize"):
+        return draw.textsize(text, font=font)
+        
+    # Last resort (should not happen in current Pillow versions unless extremely new where textsize is gone AND textbbox failed)
+    return font.getsize(text)
 
 def jitter(x, y):
     return x + random.uniform(-1, 1), y + random.uniform(-1, 1)
@@ -969,7 +987,7 @@ def generate_doc_from_anchor(anchor_entry: Dict, catalog_segment: List[Dict]) ->
 # --- MAIN ---
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--csv", required=True, help="Path to MIMIC prescriptions CSV")
+    parser.add_argument("--csv", default="../../data/prescriptions_demo.csv", help="Path to MIMIC prescriptions CSV")
     parser.add_argument("--out", default="output_mimic", help="Output directory")
 
     # NOVO: intervalo de linhas do CSV (índice da linha no arquivo original, 0-based)

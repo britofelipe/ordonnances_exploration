@@ -24,6 +24,14 @@ Le script principal est `generate_ordo_mimic.py`. Il utilise des données du dat
 
 **Emplacement :** `src/generation/`
 
+**Pré-requis (Environnement) :**
+Avant toute commande, activez l'environnement configuré :
+```bash
+source /etc/profile
+module load anaconda3/2022.10/gcc-13.1.0
+source activate ordonnances
+```
+
 **Comment l'utiliser :**
 Il est recommandé d'exécuter le script depuis son répertoire pour garantir que les chemins relatifs (vers `../../data`) fonctionnent correctement.
 
