@@ -12,16 +12,18 @@ from transformers import (
     Seq2SeqTrainer,
     Seq2SeqTrainingArguments,
 )
+import sys
 from typing import List, Optional
 
-# importa as dataclasses e o gerador de FHIR do script de geração
-from generate_ordo_mimic import Posology, LineItem, OrdoDoc, to_fhir_bundle
+# import from sibling/generation folder
+sys.path.append(str(Path(__file__).parent.parent.parent))
+from src.generation.generate_ordo_mimic import Posology, LineItem, OrdoDoc, to_fhir_bundle
 
 # =============================
 # 1. Carregar pares txt + FHIR
 # =============================
 
-DATA_DIR = Path("output_mimic_fhir_ocr_template_demo_simplified")  # ajuste para o diretório real
+DATA_DIR = Path("../../output_mimic_fhir_ocr_template_demo_simplified")  # ajuste para o diretório real
 
 def ordo_to_linear_text(doc: OrdoDoc) -> str:
     lines = []

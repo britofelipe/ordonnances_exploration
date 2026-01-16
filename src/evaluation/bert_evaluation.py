@@ -18,7 +18,7 @@ from transformers.trainer_utils import get_last_checkpoint
 # 1. Carregar pares txt + FHIR
 # =============================
 
-DATA_DIR = Path("output_mimic_fhir_ocr_template_demo_simplified")  # mesmo diretório do treino
+DATA_DIR = Path("../../output_mimic_fhir_ocr_template_demo_simplified")  # mesmo diretório do treino
 
 def load_one_pair(txt_path: Path):
     json_path = txt_path.with_suffix(".fhir.json")

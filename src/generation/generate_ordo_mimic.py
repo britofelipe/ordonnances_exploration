@@ -170,23 +170,23 @@ STYLE_CHOICES = ["typed", "hand", "mixed"]
 TEMPLATE_BACKGROUNDS = [
     {
         "name": "bicetre",
-        "path": "templates/template_bicetre.png",
+        "path": "../../data/templates/template_bicetre.png",
         "text_area_frac": (0.10, 0.22, 0.95, 0.93),
     },
     {
         "name": "saint_malo",
-        "path": "templates/template_saint_malo.png",
+        "path": "../../data/templates/template_saint_malo.png",
         "text_area_frac": (0.10, 0.22, 0.95, 0.93),
     },
     {
         "name": "centre_sante_1",
-        "path": "templates/template_centre_sante_1.png",
+        "path": "../../data/templates/template_centre_sante_1.png",
         "text_area_frac": (0.10, 0.16, 0.95, 0.86),
         "date_positions": ["header", "top_right"],  # evita rodapé
     },
     {
         "name": "centre_sante_2",
-        "path": "templates/template_centre_sante_2.png",
+        "path": "../../data/templates/template_centre_sante_2.png",
         # evita cabeçalho + selo RPPS à esquerda e deixa o bloco central livre
         "text_area_frac": (0.10, 0.22, 0.95, 0.93),
     },

@@ -18,7 +18,9 @@ from transformers.trainer_utils import get_last_checkpoint
 # =============================
 # IMPORTS DO SEU GERADOR
 # =============================
-from generate_ordo_mimic import Posology, LineItem, OrdoDoc, to_fhir_bundle
+import sys
+sys.path.append(str(Path(__file__).parent.parent.parent))
+from src.generation.generate_ordo_mimic import Posology, LineItem, OrdoDoc, to_fhir_bundle
 
 # =============================
 # 1) Helpers: FHIR <-> DSL
@@ -240,7 +242,7 @@ def safe_dsl_to_fhir(dsl_text: str, bundle_id="eval") -> dict:
 # 3) Carregar pares (GT = DSL, não JSON!)
 # =============================
 
-DATA_DIR = Path("output_mimic_fhir_ocr_template_demo_simplified")
+DATA_DIR = Path("../../output_mimic_fhir_ocr_template_demo_simplified")
 
 def load_one_pair(txt_path: Path):
     json_path = txt_path.with_suffix(".fhir.json")
