@@ -18,7 +18,7 @@ from transformers.trainer_utils import get_last_checkpoint
 # 1. Carregar pares txt + FHIR
 # =============================
 
-DATA_DIR = Path("../../output_mimic_fhir_ocr_template_demo_simplified")  # mesmo diretório do treino
+DATA_DIR = Path("../generation/output_treino")  # mesmo diretório do treino
 
 def load_one_pair(txt_path: Path):
     json_path = txt_path.with_suffix(".fhir.json")
@@ -63,7 +63,7 @@ print("train:", len(train_ds), "val:", len(val_ds), "test:", len(test_ds))
 # 3. Carregar último checkpoint
 # =============================
 
-output_dir = "./toobib-ordo-bert2bert-template-simplified"
+output_dir = "../training/toobib-ordo-bert2bert"
 
 last_checkpoint = get_last_checkpoint(output_dir)
 if last_checkpoint is None:

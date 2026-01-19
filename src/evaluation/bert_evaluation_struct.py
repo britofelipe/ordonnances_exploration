@@ -275,7 +275,7 @@ print("train:", len(train_ds), "val:", len(val_ds), "test:", len(test_ds))
 # 4) Carregar checkpoint
 # =============================
 
-output_dir = "../training/toobib-ordo-bert2bert"
+output_dir = "../training/toobib-ordo-bert2bert-template-simplified"
 last_checkpoint = get_last_checkpoint(output_dir)
 if last_checkpoint is None:
     raise ValueError(f"Nenhum checkpoint encontrado em {output_dir}")
