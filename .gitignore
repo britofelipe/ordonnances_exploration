@@ -237,3 +237,5 @@ __marimo__/
 output_mimic_fhir_ocr/
 ordo_imgs/
 .slurm_email
+
+/data/
