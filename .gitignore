@@ -239,3 +239,4 @@ ordo_imgs/
 .slurm_email
 
 /data/
+/src/training/toobib-ordo-bert2bert-template-simplified/

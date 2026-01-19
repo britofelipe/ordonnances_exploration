@@ -242,7 +242,7 @@ def safe_dsl_to_fhir(dsl_text: str, bundle_id="eval") -> dict:
 # 3) Carregar pares (GT = DSL, não JSON!)
 # =============================
 
-DATA_DIR = Path("../../output_mimic_fhir_ocr_template_demo_simplified")
+DATA_DIR = Path("../generation/output_treino")
 
 def load_one_pair(txt_path: Path):
     json_path = txt_path.with_suffix(".fhir.json")
@@ -275,7 +275,7 @@ print("train:", len(train_ds), "val:", len(val_ds), "test:", len(test_ds))
 # 4) Carregar checkpoint
 # =============================
 
-output_dir = "./toobib-ordo-bert2bert-template-simplified"
+output_dir = "../training/toobib-ordo-bert2bert"
 last_checkpoint = get_last_checkpoint(output_dir)
 if last_checkpoint is None:
     raise ValueError(f"Nenhum checkpoint encontrado em {output_dir}")

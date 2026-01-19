@@ -23,7 +23,8 @@ export PYTHONNOUSERSITE=1
 #conda create --name bert_env python=3.9 --force
 
 # Activate the environment
-source activate bert_env
+source activate ordonnances
+#pip install 'accelerate>=0.26.0'
 #pip install datasets
 #pip install transformers
 #pip install 'accelerate>=0.26.0'
