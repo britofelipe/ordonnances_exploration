@@ -13,6 +13,7 @@ numpy
 opencv-python-headless
 pytesseract
 pdf2image
+accelerate>=0.26.0
 
 # --- SYSTEM REQUIREMENTS (Tesseract) ---
 # This project requires Tesseract OCR installed on the system.
