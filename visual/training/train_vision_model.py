@@ -15,8 +15,7 @@ from transformers import (
     TrainingArguments
 )
 from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
-
-# Configure Logging
+from qwen_vl_utils import process_vision_info
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -120,7 +119,7 @@ class VisualPrescriptionDataset(Dataset):
         text = self.processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=False)
         
         # Create inputs including image features
-        image_inputs, video_inputs = transformers.models.qwen2_vl.image_processing_qwen2_vl.process_vision_info(messages)
+        image_inputs, video_inputs = process_vision_info(messages)
         inputs = self.processor(
             text=[text],
             images=image_inputs,
@@ -129,8 +128,13 @@ class VisualPrescriptionDataset(Dataset):
             return_tensors="pt"
         )
         
-        # Squeeze batch dim
-        return {k: v.squeeze(0) for k, v in inputs.items()}
+        # Squeeze batch dim only for text inputs
+        return {
+            "input_ids": inputs["input_ids"].squeeze(0),
+            "attention_mask": inputs["attention_mask"].squeeze(0),
+            "pixel_values": inputs["pixel_values"], # Keep original shape (concatenated patches)
+            "image_grid_thw": inputs["image_grid_thw"] # Keep (1, 3) shape for concatenation
+        }
 
 def collate_fn(batch):
     batch = [b for b in batch if b is not None]
@@ -175,6 +179,9 @@ def main():
         device_map="auto",
     )
     
+    # Prepare model for training (enables gradient checkpointing support & input grads)
+    model = prepare_model_for_kbit_training(model)
+
     # LoRA Configuration
     peft_config = LoraConfig(
         r=model_args.lora_rank,
@@ -184,7 +191,19 @@ def main():
         task_type="CAUSAL_LM",
     )
     model = get_peft_model(model, peft_config)
+    
+    # Force enable input gradients (crucial for LoRA + Checkpointing)
+    if hasattr(model, "enable_input_require_grads"):
+        model.enable_input_require_grads()
+    else:
+        def make_inputs_require_grad(module, input, output):
+            output.requires_grad_(True)
+        model.get_input_embeddings().register_forward_hook(make_inputs_require_grad)
+
     model.print_trainable_parameters()
+    
+    # Ensure use_cache is False
+    model.config.use_cache = False
 
     # Dataset
     train_dataset = VisualPrescriptionDataset(data_args.data_dir, processor)

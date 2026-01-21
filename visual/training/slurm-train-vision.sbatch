@@ -22,6 +22,9 @@ source activate ordonnances
 mkdir -p ./logs
 mkdir -p ./checkpoints
 
+# Optimization for Memory
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+
 # Launch Training
 # Using Qwen2-VL-2B-Instruct for faster iteration.
 # Change to Qwen/Qwen2-VL-7B-Instruct for final run.
@@ -31,11 +34,13 @@ python train_vision_model.py \
     --data_dir ../dataset_v1 \
     --output_dir checkpoints/qwen2vl-layout-v1 \
     --num_train_epochs 3 \
-    --per_device_train_batch_size 2 \
-    --gradient_accumulation_steps 8 \
+    --per_device_train_batch_size 1 \
+    --gradient_accumulation_steps 16 \
     --learning_rate 2e-4 \
     --save_steps 250 \
-    --logging_steps 10
+    --logging_steps 10 \
+    --gradient_checkpointing \
+    --dataloader_num_workers 4
 
 echo ""
 echo "=========================================="
