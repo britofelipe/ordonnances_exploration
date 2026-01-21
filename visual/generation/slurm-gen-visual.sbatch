@@ -1,9 +1,9 @@
 #!/bin/bash
 #SBATCH --job-name=vis-gen
 #SBATCH --nodes=1
-#SBATCH --partition=gpu_prod_long
+#SBATCH --partition=cpu_prod
 #SBATCH --time=02:00:00
-#SBATCH --output=visual/generation/logs/gen-%j.out
+#SBATCH --output=./logs/gen-%j.out
 #SBATCH --mail-type=END,FAIL
 
 echo "=========================================="
@@ -29,10 +29,10 @@ echo "Output Dir: visual/dataset_v1"
 
 # Run Generation
 # We generate 1000 images for initial training of the detector
-python visual/generation/generate_visual_data.py \
+python generate_visual_data.py \
     --count 1000 \
-    --out visual/dataset_v1 \
-    --csv data/prescriptions_demo.csv \
+    --out ../dataset_v1 \
+    --csv ../../data/prescriptions_demo.csv \
     --blur 0.2 \
     --jpeg 0.3 \
     --stains 0.2 \

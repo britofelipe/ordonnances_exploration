@@ -57,15 +57,10 @@ FORM_MAP_FR = {
 
 # YOLO Class Mapping
 CLASS_MAPPING = {
-    "PATIENT": 0,       # Custom: Patient Info
-    "PRESCRIBER": 0,    # Lumping header info
-    "DATE": 2,          # Footer or Header Date
-    "DRUG": 3,          # Individual Drug Line
-    "DETAILS": 3,       # Form/Route (grouped with drug for now, or separate?) -> Let's map to 'medication_item' (3)
-    "INSTRUCT": 3,      # Posology -> 'medication_item' (3)
-    "HEADER": 0,        # Explicit Header Zone
-    "MED_BLOCK": 1,     # Full Med Block
-    "FOOTER": 2         # Footer
+    "header": 0,            # Patient/Doctor/Date Header
+    "medication_block": 1,  # Full Meds Block
+    "footer": 2,            # Signature/Footer
+    "medication_item": 3    # Individual Drug Lines
 }
 # Simplified mapping for user request:
 # 0: Header, 1: Medication Block, 2: Footer, 3: Medication Item
@@ -154,7 +149,9 @@ def apply_noise(img: Image.Image, blur=0.0, jpeg=0.0, skew=0.0, stains=0.0):
         # Simplified JPEG artifact simulation
         import io
         buf = io.BytesIO()
-        q = random.randint(max(10, int(100 - 60*jpeg)), 90)
+        # Fix: ensure low bound doesn't exceed high bound (90)
+        q_min = min(90, max(10, int(100 - 60*jpeg)))
+        q = random.randint(q_min, 90)
         img.save(buf, format="JPEG", quality=q)
         buf.seek(0)
         img = Image.open(buf).convert("RGB")
@@ -171,6 +168,89 @@ def posology_from_mimic(row) -> Posology:
     dur = "" # simplified
     form = FORM_MAP_FR.get(row.get('form_rx','').strip().upper(), infer_form(row.get('prod_strength','')))
     return Posology(dose=dose, frequency=freq, duration=dur, route=route, form=form)
+
+# --- FHIR EXPORT HELPERS ---
+
+def frequency_to_timing(freq: str) -> Dict:
+    if not freq: return None
+    m = re.match(r"\s*(\d+)\s*/\s*j", freq)
+    if not m: return None
+    f = int(m.group(1))
+    return {"repeat": {"frequency": f, "period": 1, "periodUnit": "d"}}
+
+def parse_dose_to_quantity(dose: str) -> Optional[Dict]:
+    if not dose: return None
+    m = re.match(r"\s*([0-9]+(?:\.[0-9]+)?)\s+(.+)$", dose)
+    if not m: return None
+    try: value = float(m.group(1))
+    except: return None
+    unit = m.group(2).strip()
+    return {"value": value, "unit": unit}
+
+def duration_to_bounds_duration(duration: str) -> Optional[Dict]:
+    if not duration: return None
+    m = re.match(r"\s*([0-9]+)", duration)
+    if not m: return None
+    value = int(m.group(1))
+    return {"value": value, "unit": "d"}
+
+def lineitem_to_medication_request(doc: OrdoDoc, line: LineItem, idx: int, base_id: str) -> Dict:
+    poso = line.posology
+    drug_line = line.drug_name
+    if line.strength: drug_line += f" ({line.strength})"
+    
+    details_segments = []
+    if poso.form: details_segments.append(f"Forme: {poso.form}")
+    if poso.route: details_segments.append(f"Voie: {poso.route}")
+    
+    poso_segments = [p for p in [poso.dose, poso.frequency, poso.duration] if p]
+    
+    dosage_text = drug_line
+    if details_segments: dosage_text += " " + " ".join(details_segments)
+    if poso_segments: dosage_text += " Posologie: " + " ".join(poso_segments)
+    
+    dosage_instruction = {"text": dosage_text, "sequence": idx}
+    
+    if poso.as_needed:
+        dosage_instruction["asNeededBoolean"] = True
+        if poso.as_needed_for: dosage_instruction["asNeededCodeableConcept"] = {"text": poso.as_needed_for}
+    if poso.route:
+        dosage_instruction["route"] = {"text": poso.route}
+        
+    timing = frequency_to_timing(poso.frequency)
+    bounds = duration_to_bounds_duration(poso.duration)
+    if bounds:
+        if not timing: timing = {"repeat": {}}
+        if "repeat" not in timing: timing["repeat"] = {}
+        timing["repeat"]["boundsDuration"] = bounds
+    if timing: dosage_instruction["timing"] = timing
+    
+    if poso.dose:
+        dose_entry = {"doseString": poso.dose}
+        q = parse_dose_to_quantity(poso.dose)
+        if q: dose_entry["doseQuantity"] = q
+        dosage_instruction["doseAndRate"] = [dose_entry]
+        
+    mr = {
+        "resourceType": "MedicationRequest",
+        "id": f"{base_id}-med-{idx}",
+        "status": "active",
+        "intent": "order",
+        "subject": {"display": doc.patient_name},
+        "authoredOn": doc.date_str,
+        "requester": {"display": doc.prescriber_name},
+        "medicationCodeableConcept": {"text": drug_line},
+        "dosageInstruction": [dosage_instruction]
+    }
+    if line.refills is not None:
+        mr["dispenseRequest"] = {"numberOfRepeatsAllowed": line.refills}
+    return mr
+
+def to_fhir_bundle(doc: OrdoDoc, bundle_id: str = "") -> Dict:
+    if not bundle_id:
+        bundle_id = f"ordo-{abs(hash((doc.patient_name, doc.date_str))) % 10_000_000}"
+    entries = [{"resource": lineitem_to_medication_request(doc, li, i, bundle_id)} for i, li in enumerate(doc.lines, 1)]
+    return {"resourceType": "Bundle", "type": "collection", "id": bundle_id, "entry": entries}
 
 def load_catalog_mimic(path: str) -> List[Dict]:
     print(f"Loading catalog from {path}...")
@@ -310,7 +390,9 @@ class VisualGenerator:
         print(f"[{time.strftime('%H:%M:%S')}] Starting Self-Contained Visual Generation: {count} images")
         
         # Custom Templates
-        template_dir = Path("data/templates").absolute()
+        # Resolve relative to this script: visual/generation/../../data/templates
+        template_dir = (Path(__file__).parent / "../../data/templates").resolve()
+
         templates = [
             {"path": template_dir / f"template{i}.jpeg", "text_area_frac": (0.1, 0.25, 0.9, 0.8)}
             for i in range(1, 5) if (template_dir / f"template{i}.jpeg").exists()
@@ -341,11 +423,20 @@ class VisualGenerator:
                 noise['skew'] = 0 # keep strict boxes
                 img = apply_noise(img, **noise)
                 
-                # Save
+                # Save Image
                 fid = f"ordo_vis_{i:06d}"
                 img.save(self.img_dir / f"{fid}.png")
                 
-                # Labels
+                # Save Raw Boxes (JSON) - Unnormalized
+                with open(self.output_dir / f"{fid}.json", "w") as f:
+                    json.dump(boxes_dict, f, indent=2)
+
+                # Save FHIR Ground Truth
+                fhir_data = to_fhir_bundle(doc, bundle_id=fid)
+                with open(self.output_dir / f"{fid}.fhir.json", "w") as f:
+                    json.dump(fhir_data, f, indent=2)
+                
+                # Save YOLO Labels
                 W, H = img.size
                 with open(self.label_dir / f"{fid}.txt", "w") as f:
                     for cls_name, box_list in boxes_dict.items():
