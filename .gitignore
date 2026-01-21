@@ -241,3 +241,5 @@ ordo_imgs/
 /data/
 /src/training/toobib-ordo-bert2bert-template-simplified/
 /src/training/toobib-ordo-bert2bert/
+
+/visual/training/checkpoints/

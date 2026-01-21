@@ -1,9 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=vis-eval
 #SBATCH --nodes=1
-#SBATCH --partition=gpu_prod
-#SBATCH --gres=gpu:1
-#SBATCH --time=01:00:00
+#SBATCH --partition=gpu_prod_long
 #SBATCH --output=./logs/eval-%j.out
 
 echo "=========================================="
@@ -22,7 +20,7 @@ mkdir -p ./results
 
 # Path to the specific checkpoint or final model
 # The training script saves the final model to 'visual/checkpoints/qwen2vl-layout-v1'
-ADAPTER_PATH="../checkpoints/qwen2vl-layout-v1"
+ADAPTER_PATH="../training/checkpoints/qwen2vl-layout-v1"
 
 # Check if adapter exists, else warn
 if [ ! -d "$ADAPTER_PATH" ]; then
@@ -34,7 +32,7 @@ fi
 python eval_vision_rag.py \
     --base_model Qwen/Qwen2-VL-2B-Instruct \
     --adapter_path "$ADAPTER_PATH" \
-    --data_dir ../generation/dataset_v1 \
+    --data_dir ../dataset_v1 \
     --output_dir ./results \
     --test_count 50
 
