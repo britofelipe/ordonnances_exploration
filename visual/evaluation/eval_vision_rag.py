@@ -149,6 +149,14 @@ def evaluate_model(args):
         # 3. Load Ground Truth
         with open(gt_path, "r") as f:
             gt = json.load(f) # format: {'header': [[x1, y1, x2, y2], ...]}
+
+        # DEBUG: Print first few examples
+        if len(metrics["iou_med_block"]) < 3:
+            print(f"\n--- DEBUG SAMPLE {file_id} ---", flush=True)
+            print(f"RAW OUTPUT: {repr(output_text[:300])}...", flush=True) # Print repr to see special tokens
+            print(f"PARSED PREDS: {preds}", flush=True)
+            print(f"GROUND TRUTH: {gt}", flush=True)
+            print("------------------------------", flush=True)
             
         # 4. Compare (Simplify: Compare Box with Highest IOU for each class)
         for cls in ["header", "medication_block", "footer"]:
@@ -161,9 +169,14 @@ def evaluate_model(args):
             # For each GT box, find best matching Pred box
             class_ious = []
             for gt_box in gt_boxes:
+                # FIX: Ground Truth is in [x, y, w, h] format, need to convert to [x1, y1, x2, y2]
+                gt_x1, gt_y1, gt_w, gt_h = gt_box
+                gt_xyxy = [gt_x1, gt_y1, gt_x1 + gt_w, gt_y1 + gt_h]
+                
                 best_iou_for_this_gt = 0.0
                 if pred_boxes:
-                    ious = [calculate_iou(gt_box, pb) for pb in pred_boxes]
+                    # pred_boxes are already [x1, y1, x2, y2] from parse_qwen_output
+                    ious = [calculate_iou(gt_xyxy, pb) for pb in pred_boxes]
                     best_iou_for_this_gt = max(ious)
                 class_ious.append(best_iou_for_this_gt)
             

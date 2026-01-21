@@ -29,7 +29,7 @@ if [ ! -d "$ADAPTER_PATH" ]; then
     # exit 1
 fi
 
-python eval_vision_rag.py \
+python -u eval_vision_rag.py \
     --base_model Qwen/Qwen2-VL-2B-Instruct \
     --adapter_path "$ADAPTER_PATH" \
     --data_dir ../dataset_v1 \
