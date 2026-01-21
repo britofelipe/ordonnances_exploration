@@ -107,3 +107,40 @@ Les principales bibliothèques (voir `requirements.txt` ou scripts de setup cond
 - `pandas`
 - `numpy`
 - `scikit-learn`
+
+## Nouvelle Approche : Pipeline Visuel & Extraction Hybride
+
+Nous avons intégré une nouvelle chaîne de traitement "End-to-End" pour améliorer la robustesse face aux mises en page complexes (tableaux, blocs multiples).
+
+**Architecture :**
+
+1.  **Génération Visuelle Avancée** (`visual/generation/`) :
+    *   Création d'ordonnances avec annotations de boîtes englobantes (Bounding Boxes).
+    *   Simulation de mises en page réalistes (En-tête, Bloc Médicaments, Pied de page).
+
+2.  **Détection de Zones (Vision Model)** (`visual/training/`) :
+    *   Fine-tuning de **Qwen2-VL** (VLM) pour détecter les zones d'intérêt.
+    *   Technique : LoRA (Low-Rank Adaptation) pour l'efficacité.
+
+3.  **Extraction Hybride** (`visual/extraction/`) :
+    *   **OCR Ciblé** : Tesseract 5 sur les zones découpées.
+    *   **Parsing Regex** : Extraction des dosages et posologies.
+    *   **Concordance Sémantique** : Validation des noms de médicaments via la base **Thesorimed** (Algorithme TF-IDF + Recherche Floue).
+
+4.  **Évaluation & Benchmarking** (`visual/evaluation/` & `visual/benchmarks/`) :
+    *   Mesure de la précision de découpage (IoU).
+    *   Suivi des performances dans `history.json`.
+
+**Comment lancer le pipeline visuel :**
+
+*   **Entraînement :**
+    ```bash
+    cd visual/training
+    sbatch slurm-train-vision.sbatch
+    ```
+
+*   **Évaluation :**
+    ```bash
+    cd visual/evaluation
+    sbatch slurm-eval-visual.sbatch
+    ```
