@@ -31,7 +31,7 @@ echo "Output Dir: visual/dataset_v1"
 # We generate 1000 images for initial training of the detector
 python generate_visual_data.py \
     --count 1000 \
-    --out ../dataset_v1 \
+    --out ./dataset_v1 \
     --csv ../../data/prescriptions_demo.csv \
     --blur 0.2 \
     --jpeg 0.3 \
