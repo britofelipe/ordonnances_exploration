@@ -17,5 +17,5 @@ source activate ordonnances
 python -m pip list
 which tesseract
 #tesseract --list-langs
-#python generate_ordo_mimic.py --csv prescriptions_demo.csv --out output_mimic_fhir_ocr_template_demo --count 20 --blur 2.0 --jpeg 1.0 --stains 1.0 --skew 3.0
-python generate_ordo_mimic.py --csv prescriptions_demo.csv --out output_mimic_fhir_ocr_template_demo_simplified --start_idx 9000 --end_idx 18000 --count 9000 --blur 2.0 --jpeg 1.0 --stains 0.0 --skew 3.0 --only_train
+python generate_ordo_mimic.py --csv prescriptions_demo.csv --out output_mimic_fhir_ocr_template_demo --count 20 --blur 2.0 --jpeg 1.0 --stains 1.0 --skew 3.0
+#python generate_ordo_mimic_segmented.py --csv prescriptions_demo.csv --out output_mimic_fhir_ocr_demo_segmented --start_idx 9000 --end_idx 9020 --count 20 --blur 2.0 --jpeg 1.0 --stains 0.0 --skew 3.0 #--only_train
