@@ -21,7 +21,7 @@ from generate_ordo_mimic import Posology, LineItem, OrdoDoc, to_fhir_bundle
 # 1. Carregar pares txt + FHIR
 # =============================
 
-DATA_DIR = Path("output_mimic_fhir_ocr_template_demo_simplified")  # ajuste para o diretório real
+DATA_DIR = Path("output_mimic_fhir_ocr_template_prod")  # ajuste para o diretório real
 
 def ordo_to_linear_text(doc: OrdoDoc) -> str:
     lines = []
@@ -291,11 +291,15 @@ model = EncoderDecoderModel.from_encoder_decoder_pretrained(
     model_name, model_name
 )
 
-# configurar tokens especiais
 model.config.decoder_start_token_id = tokenizer.cls_token_id
 model.config.eos_token_id = tokenizer.sep_token_id
 model.config.pad_token_id = tokenizer.pad_token_id
 model.config.vocab_size = model.config.encoder.vocab_size
+
+# IMPORTANTE: amarra embeddings e cria lm_head consistente
+model.config.tie_word_embeddings = True
+model.tie_weights()
+
 
 # =============================
 # 4. Tokenização
@@ -315,7 +319,7 @@ def preprocess_batch(batch):
     # decoder (labels)
     with tokenizer.as_target_tokenizer():
         labels = tokenizer(
-            batch["target_text"],
+            text_target=batch["target_text"], 
             max_length=MAX_TARGET_LEN,
             padding="max_length",
             truncation=True,
@@ -360,7 +364,7 @@ tokenized_test = test_ds.map(          # NOVO: tokenizar test também
 data_collator = DataCollatorForSeq2Seq(tokenizer, model=model)
 
 training_args = Seq2SeqTrainingArguments(
-    output_dir="./toobib-ordo-bert2bert-template-simplified",
+    output_dir="./toobib-ordo-bert2bert-prod-100000",
     eval_strategy="epoch",          # avalia no conjunto de validação a cada época
     save_strategy="epoch",
     load_best_model_at_end=True,
@@ -426,8 +430,11 @@ trainer = Seq2SeqTrainer(
 # =============================
 
 trainer.train()
-trainer.save_model("./toobib-ordo-bert2bert")
-tokenizer.save_pretrained("./toobib-ordo-bert2bert")
+
+# garanta que o modelo que você quer salvar é o melhor/final
+trainer.save_model("./toobib-ordo-bert2bert-prod-100000")
+tokenizer.save_pretrained("./toobib-ordo-bert2bert-prod-100000")
+
 
 # =============================
 # 7. Avaliação FINAL no test set
@@ -446,7 +453,7 @@ print(test_metrics)
 
 from transformers import EncoderDecoderModel, AutoTokenizer
 
-model_path = "./toobib-ordo-bert2bert"
+model_path = "./toobib-ordo-bert2bert-prod-100000"
 tokenizer = AutoTokenizer.from_pretrained(model_path)
 model = EncoderDecoderModel.from_pretrained(model_path)
 model.eval()
@@ -485,7 +492,7 @@ def ordo_txt_to_fhir_json(txt: str):
     return gen_text, fhir_bundle
 
 # exemplo: mesma ordo_0002
-with open("output_mimic_fhir_ocr_template_demo_simplified/ordo_0002.txt", encoding="utf-8") as f:
+with open("output_mimic_fhir_ocr_template_prod/ordo_0002.txt", encoding="utf-8") as f:
     txt = f.read()
 linear_str, fhir = ordo_txt_to_fhir_json(txt)
 

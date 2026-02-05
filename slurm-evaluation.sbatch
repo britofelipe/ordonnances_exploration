@@ -1,12 +1,11 @@
 #!/bin/bash
 
-#SBATCH --job-name=bert-ev
+#SBATCH --job-name=bert-ev2
 #SBATCH --nodes=1
-#SBATCH --partition=gpu_prod_long
+#SBATCH --partition=cpu_inter
 #SBATCH --output=logs/slurm-%j.out
 
 echo "Running on $(hostname)"
-
 
 # Ensure module is visible 
 source /etc/profile
@@ -15,22 +14,43 @@ source /etc/profile
 module load anaconda3/2022.10/gcc-13.1.0
 
 # Create conda environment 
-# and prevent the use of system site-package
-# that will interfer with the conda env
+# and prevent the use of system site-packages
+# that will interfere with the conda env
 export PYTHONNOUSERSITE=1
-
-# Create the environment using python 3.9
-#conda create --name bert_env python=3.9 --force
 
 # Activate the environment
 source activate bert_env
-#pip install datasets
-#pip install transformers
-#pip install 'accelerate>=0.26.0'
+
+# ==========================================
+# FIX INSTALLATION (Run this once)
+# ==========================================
+# 1. Uninstall the existing incompatible torch version
+#echo "Uninstalling old torch..."
 #pip uninstall -y torch torchvision torchaudio
 
-# Display the installed packages using the conda install python interpreter
-python -m pip list
+# 2. Install the version compatible with GTX 1080 Ti (CUDA 11.8)
+#echo "Installing Torch for CUDA 11.8..."
+#pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 
-#tesseract --list-langs
-python bert_evaluation_struct.py
+# 3. (Optional) Ensure dependencies are present
+# pip install datasets transformers 'accelerate>=0.26.0'
+
+# ==========================================
+# DIAGNOSTICS
+# ==========================================
+#echo "--- GPU Status (nvidia-smi) ---"
+#nvidia-smi
+
+#echo "--- Python Torch Check ---"
+#python -c "import torch; print(f'Torch Version: {torch.__version__}'); print(f'CUDA Available: {torch.cuda.is_available()}')"
+
+#echo "--- Pip List ---"
+#python -m pip list | grep torch
+
+# ==========================================
+# RUN EVALUATION
+# ==========================================
+#echo "--- Starting Benchmark ---"
+#pip freeze | egrep 'transformers|torch|tokenizers|sentencepiece|safetensors'
+
+python bert_evaluation_benchmark.py
