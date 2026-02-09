@@ -231,7 +231,7 @@ def safe_dsl_to_fhir(dsl_text: str, bundle_id="eval") -> dict:
 # 3) Load pairs
 # =============================
 
-DATA_DIR = Path("output_mimic_fhir_ocr_template_demo_simplified") 
+DATA_DIR = Path("output_mimic_fhir_ocr_template_prod") 
 
 def load_one_pair(txt_path: Path):
     json_path = txt_path.with_suffix(".fhir.json")
@@ -260,9 +260,9 @@ print("train:", len(train_ds), "val:", len(val_ds), "test:", len(test_ds))
 # 4) Load checkpoint
 # =============================
 
-output_dir = "./toobib-ordo-bert2bert-template-simplified"
+output_dir = "./toobib-ordo-bert2bert-prod-100000"
 last_checkpoint = get_last_checkpoint(output_dir)
-last_checkpoint = "./toobib-ordo-bert2bert-prod"
+#last_checkpoint = "./toobib-ordo-bert2bert-prod"
 if last_checkpoint is None:
     raise ValueError(f"No checkpoint found in {output_dir}")
 
@@ -373,8 +373,8 @@ trainer = Seq2SeqTrainer(
 )
 
 print("== Final Evaluation on TEST set ==")
-#test_metrics = trainer.evaluate(eval_dataset=tokenized_test, metric_key_prefix="test")
-#print(test_metrics)
+test_metrics = trainer.evaluate(eval_dataset=tokenized_test, metric_key_prefix="test")
+print(test_metrics)
 
 # =============================
 # 6) Debug: Examples
@@ -415,10 +415,10 @@ for k, idx in enumerate(indices, start=1):
     print(pred_dsl[:500])
 
     # Print JSONs to see why they don't match
-    print("\nGT FHIR (canon head):")
-    print(json.dumps(gt_fhir, ensure_ascii=False, indent=2)[:500] + "...") 
-    print("\nPRED FHIR (canon head):")
-    print(json.dumps(pred_fhir, ensure_ascii=False, indent=2)[:500] + "...")
+    print("\nGT FHIR (complete):")
+    print(json.dumps(gt_fhir, ensure_ascii=False, indent=2)) 
+    print("\nPRED FHIR (complete):")
+    print(json.dumps(pred_fhir, ensure_ascii=False, indent=2))
 
     is_match = int(canon_no_ids(pred_fhir) == canon_no_ids(gt_fhir))
     print(f"\nFHIR EXACT MATCH: {is_match}")

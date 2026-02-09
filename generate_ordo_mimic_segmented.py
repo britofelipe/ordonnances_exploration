@@ -515,7 +515,7 @@ def lineitem_to_medication_request(line: LineItem, idx: int, base_id: str) -> Di
         "id": f"{base_id}-med-{idx}",
         "status": "active",
         "intent": "order",
-        "medicationCodeableConcept": {"text": drug_line},
+        "medication": {"text": drug_line},
         "dosageInstruction": [dosage_instruction],
     }
 

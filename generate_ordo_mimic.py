@@ -463,15 +463,174 @@ def load_catalog_mimic(path: str) -> List[Dict]:
     return catalog
 
 # --- FHIR EXPORT HELPERS ---
+import re
+from datetime import datetime
+from typing import Dict, Optional, List
 
-def frequency_to_timing(freq: str) -> Dict:
+# -------------------------
+# Helpers FHIR-compliance
+# -------------------------
+
+_MONTHS_FR = {
+    "janv": 1, "jan": 1,
+    "févr": 2, "fevr": 2, "fév": 2, "fev": 2,
+    "mars": 3,
+    "avr": 4, "avril": 4,
+    "mai": 5,
+    "juin": 6,
+    "juil": 7, "juillet": 7,
+    "août": 8, "aout": 8,
+    "sept": 9, "septembre": 9,
+    "oct": 10, "octobre": 10,
+    "nov": 11, "novembre": 11,
+    "déc": 12, "dec": 12, "décembre": 12, "decembre": 12,
+}
+
+def normalize_authored_on(date_str: str) -> str:
     """
-    Convert a frequency string like '3/j' into a FHIR Timing structure.
-    Returns a dict or None if we can't parse the frequency.
+    FHIR authoredOn: date / dateTime / partial date.
+    Aqui vamos normalizar para: YYYY ou YYYY-MM ou YYYY-MM-DD.
+    Aceita entradas comuns do seu gerador: 06-09-2024, 06/09/24, 06 sept. 2024, etc.
+    """
+    if not date_str:
+        return "1900-01-01"
+
+    s = str(date_str).strip()
+
+    # 1) Já está em ISO parcial aceitável?
+    # YYYY
+    if re.fullmatch(r"\d{4}", s):
+        return s
+    # YYYY-MM
+    if re.fullmatch(r"\d{4}-\d{2}", s):
+        return s
+    # YYYY-MM-DD
+    if re.fullmatch(r"\d{4}-\d{2}-\d{2}", s):
+        return s
+
+    # 2) dd/mm/yyyy ou dd-mm-yyyy ou dd.mm.yyyy
+    m = re.match(r"^\s*(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})\s*$", s)
+    if m:
+        d = int(m.group(1))
+        mo = int(m.group(2))
+        y = int(m.group(3))
+        if y < 100:
+            y += 2000
+        # validação simples
+        try:
+            datetime(y, mo, d)
+            return f"{y:04d}-{mo:02d}-{d:02d}"
+        except ValueError:
+            return "1900-01-01"
+
+    # 3) Formato "dd mon 2024" (ex: "06 sept. 2024")
+    # Captura o mês textual francês com/sem ponto
+    m = re.match(r"^\s*(\d{1,2})\s+([A-Za-zÀ-ÿ\.]+)\s+(\d{4})\s*$", s)
+    if m:
+        d = int(m.group(1))
+        mon_txt = m.group(2).lower().replace(".", "")
+        y = int(m.group(3))
+
+        # normaliza variantes tipo "févr" vs "fevr"
+        mon_txt = mon_txt.replace("é", "e").replace("è", "e").replace("ê", "e").replace("à", "a").replace("û", "u").replace("ô", "o").replace("ï", "i").replace("î", "i").replace("ç", "c")
+        mo = _MONTHS_FR.get(mon_txt, None)
+        if mo is not None:
+            try:
+                datetime(y, mo, d)
+                return f"{y:04d}-{mo:02d}-{d:02d}"
+            except ValueError:
+                return "1900-01-01"
+
+    # fallback
+    return "1900-01-01"
+
+
+def build_dosage_text(drug_line: str, poso, include_labels: bool = False) -> str:
+    """
+    Texto livre (Dosage.text). Pode ter labels, mas FHIR não exige.
+    Como você está removendo 'Voie/Posologie' no dataset novo, deixe include_labels=False.
+    """
+    parts = [drug_line]
+
+    # route/form podem entrar sem label (ou com label se quiser)
+    if poso.form:
+        parts.append(f"Forme: {poso.form}" if include_labels else poso.form)
+    if poso.route:
+        parts.append(f"Voie: {poso.route}" if include_labels else poso.route)
+
+    # dose/freq/duration
+    sig_parts = []
+    if poso.dose:
+        sig_parts.append(poso.dose)
+    if poso.frequency:
+        sig_parts.append(poso.frequency)
+    if poso.duration:
+        sig_parts.append(poso.duration)
+
+    if sig_parts:
+        if include_labels:
+            parts.append("Posologie: " + " ".join(sig_parts))
+        else:
+            parts.append(" ".join(sig_parts))
+
+    return " ".join([p for p in parts if p]).strip()
+
+
+def parse_dose_to_quantity(dose: str) -> Optional[Dict]:
+    """
+    Dose -> Quantity(SimpleQuantity) se for "number unit" (ex: "15 mg", "2 g").
+    Se for intervalo "0.5-5 mg", não cria doseQuantity (não é Quantity válido),
+    e deixa apenas no texto livre.
+    """
+    if not dose:
+        return None
+
+    dose = dose.strip()
+
+    # intervalos (ex: 0.5-5 mg) -> não vira Quantity simples
+    if re.search(r"\d+\s*-\s*\d+", dose):
+        return None
+
+    m = re.match(r"^\s*([0-9]+(?:\.[0-9]+)?)\s*([^\d].+?)\s*$", dose)
+    if not m:
+        return None
+
+    try:
+        value = float(m.group(1))
+    except ValueError:
+        return None
+
+    unit = m.group(2).strip()
+    if not unit:
+        return None
+
+    # Quantity mínimo
+    return {"value": value, "unit": unit}
+
+
+def duration_to_bounds_duration(duration: str) -> Optional[Dict]:
+    """
+    Duration: queremos algo como {"value": <int>, "unit": "d"}.
+    Aceita "18 jours", "1 jour", "2 d", etc.
+    """
+    if not duration:
+        return None
+
+    m = re.match(r"^\s*([0-9]+)", str(duration).strip())
+    if not m:
+        return None
+
+    value = int(m.group(1))
+    return {"value": value, "unit": "d"}
+
+
+def frequency_to_timing(freq: str) -> Optional[Dict]:
+    """
+    '6/j' -> Timing.repeat.frequency = 6, period = 1, periodUnit = 'd'
     """
     if not freq:
         return None
-    m = re.match(r"\s*(\d+)\s*/\s*j", freq)
+    m = re.match(r"\s*(\d+)\s*/\s*j", str(freq).strip(), flags=re.IGNORECASE)
     if not m:
         return None
     f = int(m.group(1))
@@ -483,148 +642,129 @@ def frequency_to_timing(freq: str) -> Dict:
         }
     }
 
-
-# --- DOSE AND DURATION PARSING HELPERS ---
-def parse_dose_to_quantity(dose: str) -> Optional[Dict]:
-    """
-    Try to parse a dose string like '250 mL' or '1 CAP' into a FHIR Quantity.
-    Returns a dict with 'value' and 'unit', or None if parsing fails.
-    """
-    if not dose:
-        return None
-    m = re.match(r"\s*([0-9]+(?:\.[0-9]+)?)\s+(.+)$", dose)
-    if not m:
-        return None
-    try:
-        value = float(m.group(1))
-    except ValueError:
-        return None
-    unit = m.group(2).strip()
-    return {"value": value, "unit": unit}
-
-
-def duration_to_bounds_duration(duration: str) -> Optional[Dict]:
-    """
-    Parse a duration string like '3 jours' into a FHIR Duration.
-    For now we assume duration is expressed in days.
-    """
-    if not duration:
-        return None
-    m = re.match(r"\s*([0-9]+)", duration)
-    if not m:
-        return None
-    value = int(m.group(1))
-    return {"value": value, "unit": "d"}
-
-
+# -------------------------
+# UPDATED FHIR BUILDERS
+# -------------------------
+import uuid
 def lineitem_to_medication_request(doc: OrdoDoc,
                                    line: LineItem,
                                    idx: int,
                                    base_id: str) -> Dict:
     """
-    Build a FHIR MedicationRequest for a single LineItem of the ordonnance.
+    Build a FHIR MedicationRequest.
+    Ajustes principais:
+      - authoredOn normalizado para YYYY / YYYY-MM / YYYY-MM-DD
+      - dosageInstruction: Dosage com fields (text, route, doseAndRate.doseQuantity, timing)
+      - remove 'doseString' (não é campo padrão em Dosage.doseAndRate)
     """
-    # Posology text components
     poso = line.posology
 
-    # 1) Drug line: name (+ strength in parentheses, like on the image)
+    # drug display (mantém compatibilidade com seu dataset)
     drug_line = line.drug_name
     if line.strength:
         drug_line += f" ({line.strength})"
-    # This will be used as MedicationRequest.medicationCodeableConcept.text
     med_text = drug_line
 
-    # 2) Details line: Forme / Voie
-    details_segments = []
-    if poso.form:
-        details_segments.append(f"Forme: {poso.form}")
-    if poso.route:
-        details_segments.append(f"Voie: {poso.route}")
+    # authoredOn FHIR date/dateTime/partial
+    authored_on = normalize_authored_on(doc.date_str)
 
-    # 3) Posology line: dose / frequency / duration
-    poso_segments = []
-    if poso.dose:
-        poso_segments.append(poso.dose)
-    if poso.frequency:
-        poso_segments.append(poso.frequency)
-    if poso.duration:
-        poso_segments.append(poso.duration)
-
-    # Build a single human-readable text, close to what is written on the ordonnance
-    dosage_text = drug_line
-    if details_segments:
-        dosage_text += " " + " ".join(details_segments)
-    if poso_segments:
-        dosage_text += " Posologie: " + " ".join(poso_segments)
-
-    # Structured timing (if we can parse frequency)
-    timing = frequency_to_timing(poso.frequency)
+    # Dosage.text (livre)
+    dosage_text = build_dosage_text(drug_line, poso, include_labels=False)
 
     dosage_instruction: Dict = {
-        "text": dosage_text,
-        "sequence": idx
+        "sequence": idx,
+        "text": dosage_text
     }
-    if poso.as_needed:
+
+    # asNeededBoolean / asNeededFor
+    if getattr(poso, "as_needed", False):
         dosage_instruction["asNeededBoolean"] = True
-        if poso.as_needed_for:
-            dosage_instruction["asNeededCodeableConcept"] = {"text": poso.as_needed_for}
+        if getattr(poso, "as_needed_for", ""):
+            dosage_instruction["asNeededFor"] = [{"text": poso.as_needed_for}]
+
+    # route: CodeableConcept
     if poso.route:
         dosage_instruction["route"] = {"text": poso.route}
-    # Structured timing (with boundsDuration if available)
+
+    # timing: frequency + boundsDuration(duration)
     timing = frequency_to_timing(poso.frequency)
     bounds = duration_to_bounds_duration(poso.duration)
     if bounds:
         if not timing:
             timing = {"repeat": {}}
-        if "repeat" not in timing:
-            timing["repeat"] = {}
+        timing.setdefault("repeat", {})
         timing["repeat"]["boundsDuration"] = bounds
     if timing:
         dosage_instruction["timing"] = timing
-    if poso.dose:
-        dose_entry: Dict = {"doseString": poso.dose}
-        q = parse_dose_to_quantity(poso.dose)
-        if q:
-            dose_entry["doseQuantity"] = q
-        dosage_instruction["doseAndRate"] = [dose_entry]
+
+    # doseAndRate: doseQuantity (se possível)
+    dose_qty = parse_dose_to_quantity(poso.dose)
+    if dose_qty:
+        dosage_instruction["doseAndRate"] = [
+            {"doseQuantity": dose_qty}
+        ]
+    # Se não parsear (ex: range 0.5-5 mg), fica apenas no texto livre (dosage_instruction.text)
 
     mr = {
         "resourceType": "MedicationRequest",
         "id": f"{base_id}-med-{idx}",
         "status": "active",
         "intent": "order",
+
+        # Subject/requester aqui estão como display; para FHIR estrito seria Reference com resourceType/id,
+        # mas manter display é ok para seu uso sintético.
         "subject": {"display": doc.patient_name},
-        "authoredOn": doc.date_str,
         "requester": {"display": doc.prescriber_name},
-        "medicationCodeableConcept": {
-            "text": med_text
-        },
+
+        "authoredOn": authored_on,
+
+        # Mantendo compatibilidade com seu pipeline (STU3/R4 style)
+        "medication": { "concept": {"text": med_text}},
+
         "dosageInstruction": [dosage_instruction],
-        #"note": [{
-        #    "text": "Synthetic ordonnance generated from MIMIC-IV prescriptions"
-        #}]
     }
-    # Dispense / repeats information, if available
+
+    mr["text"] = {
+        "status": "generated",
+        "div": (
+            "<div xmlns=\"http://www.w3.org/1999/xhtml\">"
+            f"<p><b>MedicationRequest</b>: {drug_line}</p>"
+            f"<p>{dosage_text}</p>"
+            "</div>"
+        )
+    }
+
+    # dispenseRequest.numberOfRepeatsAllowed (unsignedInt)
     if line.refills is not None:
-        mr["dispenseRequest"] = {
-            "numberOfRepeatsAllowed": line.refills
-        }
+        try:
+            refills_int = int(line.refills)
+            if refills_int >= 0:
+                mr["dispenseRequest"] = {"numberOfRepeatsAllowed": refills_int}
+        except Exception:
+            pass
+
     return mr
 
 
 def to_fhir_bundle(doc: OrdoDoc, bundle_id: str = "") -> Dict:
     """
-    Build a minimal FHIR Bundle (type=collection) containing one
-    MedicationRequest per line of the ordonnance.
+    Build a minimal FHIR Bundle (type=collection) containing one MedicationRequest per line.
+    Ajustes:
+      - entry deve existir apenas se houver recursos
+      - ids preservados
     """
     if not bundle_id:
-        # deterministic-ish id based on patient + date
         bundle_id = f"ordo-{abs(hash((doc.patient_name, doc.date_str))) % 10_000_000}"
 
     entries = []
     for idx, li in enumerate(doc.lines, start=1):
         mr = lineitem_to_medication_request(doc, li, idx, bundle_id)
-        entries.append({"resource": mr})
+        full_url = f"urn:uuid:{uuid.uuid4()}"
+
+        entries.append({
+            "fullUrl": full_url,
+            "resource": mr
+        })
 
     bundle = {
         "resourceType": "Bundle",

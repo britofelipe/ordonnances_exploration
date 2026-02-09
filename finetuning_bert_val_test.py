@@ -371,7 +371,7 @@ training_args = Seq2SeqTrainingArguments(
     metric_for_best_model="eval_exact_match",
     greater_is_better=True,
     save_total_limit=3, 
-    num_train_epochs=10,
+    num_train_epochs=20,
     per_device_train_batch_size=4,
     per_device_eval_batch_size=4,
     learning_rate=5e-5,
@@ -429,7 +429,17 @@ trainer = Seq2SeqTrainer(
 # 6. Treinar
 # =============================
 
-trainer.train()
+from transformers.trainer_utils import get_last_checkpoint
+import os
+
+output_dir = training_args.output_dir
+last_ckpt = None
+if os.path.isdir(output_dir):
+    last_ckpt = get_last_checkpoint(output_dir)
+
+print("Last checkpoint:", last_ckpt)
+
+trainer.train(resume_from_checkpoint=last_ckpt)
 
 # garanta que o modelo que você quer salvar é o melhor/final
 trainer.save_model("./toobib-ordo-bert2bert-prod-100000")
