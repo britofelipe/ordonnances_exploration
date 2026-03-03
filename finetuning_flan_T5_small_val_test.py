@@ -16,7 +16,7 @@ from transformers import (
     Seq2SeqTrainingArguments,
 )
 
-from generate_ordo_mimic import Posology, LineItem, OrdoDoc, to_fhir_bundle
+from ordo_gen.generate_ordo_mimic import Posology, LineItem, OrdoDoc
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
