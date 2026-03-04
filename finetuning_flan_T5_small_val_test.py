@@ -226,7 +226,7 @@ def main():
     parser.add_argument("--epochs", type=int, default=5)
     parser.add_argument("--train_batch_size", type=int, default=4)
     parser.add_argument("--eval_batch_size", type=int, default=4)
-    parser.add_argument("--lr", type=float, default=5e-5)
+    parser.add_argument("--lr", type=float, default=3e-5)
     parser.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()
 
@@ -274,6 +274,9 @@ def main():
         load_best_model_at_end=True,
         metric_for_best_model="exact_match",
         save_total_limit=3,
+        weight_decay=0.01,
+        warmup_ratio=0.1,
+        generation_num_beams=4
     )
 
     trainer = Seq2SeqTrainer(
