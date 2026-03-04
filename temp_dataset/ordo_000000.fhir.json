@@ -1,0 +1,106 @@
+{
+  "resourceType": "Bundle",
+  "type": "collection",
+  "id": "ordo_000000",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:6f2a4dc9-1b94-47ee-83a7-ad300cd13604",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "ordo_000000-med-1",
+        "status": "active",
+        "intent": "order",
+        "subject": {
+          "display": "Chloé Thomas"
+        },
+        "requester": {
+          "display": "Gabriel Boyer"
+        },
+        "authoredOn": "2024-05-21",
+        "medication": {
+          "concept": {
+            "text": "Furosemide (40mg Tablet)"
+          }
+        },
+        "dosageInstruction": [
+          {
+            "sequence": 1,
+            "text": "Furosemide (40mg Tablet) comprimé po/ng 40 mg 1/j",
+            "route": {
+              "text": "po/ng"
+            },
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 1,
+                "periodUnit": "d"
+              }
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 40.0,
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ],
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>MedicationRequest</b>: Furosemide (40mg Tablet)</p><p>Furosemide (40mg Tablet) comprimé po/ng 40 mg 1/j</p></div>"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:d960a686-4e86-4a59-8126-bea09586e41f",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "ordo_000000-med-2",
+        "status": "active",
+        "intent": "order",
+        "subject": {
+          "display": "Chloé Thomas"
+        },
+        "requester": {
+          "display": "Gabriel Boyer"
+        },
+        "authoredOn": "2024-05-21",
+        "medication": {
+          "concept": {
+            "text": "Levothyroxine Sodium (50mcg Tablet)"
+          }
+        },
+        "dosageInstruction": [
+          {
+            "sequence": 2,
+            "text": "Levothyroxine Sodium (50mcg Tablet) comprimé orale 50 mcg 1 jours",
+            "route": {
+              "text": "orale"
+            },
+            "timing": {
+              "repeat": {
+                "boundsDuration": {
+                  "value": 1,
+                  "unit": "d"
+                }
+              }
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 50.0,
+                  "unit": "mcg"
+                }
+              }
+            ]
+          }
+        ],
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>MedicationRequest</b>: Levothyroxine Sodium (50mcg Tablet)</p><p>Levothyroxine Sodium (50mcg Tablet) comprimé orale 50 mcg 1 jours</p></div>"
+        }
+      }
+    }
+  ]
+}

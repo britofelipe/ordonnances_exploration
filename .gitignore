@@ -7,7 +7,7 @@ __pycache__/
 *.so
 
 *.png
-*.json
+#*.json
 *.out
 #*.txt
 /logs

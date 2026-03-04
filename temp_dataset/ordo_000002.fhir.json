@@ -1,0 +1,205 @@
+{
+  "resourceType": "Bundle",
+  "type": "collection",
+  "id": "ordo_000002",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:a4bd1020-8b47-4cb8-877a-fba26d27da1b",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "ordo_000002-med-1",
+        "status": "active",
+        "intent": "order",
+        "subject": {
+          "display": "Elena Barbier"
+        },
+        "requester": {
+          "display": "Nina Thomas"
+        },
+        "authoredOn": "2024-07-11",
+        "medication": {
+          "concept": {
+            "text": "Furosemide (20mg Tablet)"
+          }
+        },
+        "dosageInstruction": [
+          {
+            "sequence": 1,
+            "text": "Furosemide (20mg Tablet) comprimé po/ng 20 mg 1/j",
+            "route": {
+              "text": "po/ng"
+            },
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 1,
+                "periodUnit": "d"
+              }
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 20.0,
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ],
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>MedicationRequest</b>: Furosemide (20mg Tablet)</p><p>Furosemide (20mg Tablet) comprimé po/ng 20 mg 1/j</p></div>"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:06b33934-720b-455f-bb14-a0e7d1c1bd59",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "ordo_000002-med-2",
+        "status": "active",
+        "intent": "order",
+        "subject": {
+          "display": "Elena Barbier"
+        },
+        "requester": {
+          "display": "Nina Thomas"
+        },
+        "authoredOn": "2024-07-11",
+        "medication": {
+          "concept": {
+            "text": "Pantoprazole (40 mg Vial)"
+          }
+        },
+        "dosageInstruction": [
+          {
+            "sequence": 2,
+            "text": "Pantoprazole (40 mg Vial) flacon intraveineuse 80 mg 1 jours",
+            "route": {
+              "text": "intraveineuse"
+            },
+            "timing": {
+              "repeat": {
+                "boundsDuration": {
+                  "value": 1,
+                  "unit": "d"
+                }
+              }
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 80.0,
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ],
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>MedicationRequest</b>: Pantoprazole (40 mg Vial)</p><p>Pantoprazole (40 mg Vial) flacon intraveineuse 80 mg 1 jours</p></div>"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:5eda75ef-d2d0-4a70-a50c-76cc144280de",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "ordo_000002-med-3",
+        "status": "active",
+        "intent": "order",
+        "subject": {
+          "display": "Elena Barbier"
+        },
+        "requester": {
+          "display": "Nina Thomas"
+        },
+        "authoredOn": "2024-07-11",
+        "medication": {
+          "concept": {
+            "text": "Cepacol (Sore Throat Lozenge) (1 Lozenge)"
+          }
+        },
+        "dosageInstruction": [
+          {
+            "sequence": 3,
+            "text": "Cepacol (Sore Throat Lozenge) (1 Lozenge) orale 2 LOZ 1 jours",
+            "route": {
+              "text": "orale"
+            },
+            "timing": {
+              "repeat": {
+                "boundsDuration": {
+                  "value": 1,
+                  "unit": "d"
+                }
+              }
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 2.0,
+                  "unit": "LOZ"
+                }
+              }
+            ]
+          }
+        ],
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>MedicationRequest</b>: Cepacol (Sore Throat Lozenge) (1 Lozenge)</p><p>Cepacol (Sore Throat Lozenge) (1 Lozenge) orale 2 LOZ 1 jours</p></div>"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ff889f71-8b2d-4897-9867-81ca76820356",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "ordo_000002-med-4",
+        "status": "active",
+        "intent": "order",
+        "subject": {
+          "display": "Elena Barbier"
+        },
+        "requester": {
+          "display": "Nina Thomas"
+        },
+        "authoredOn": "2024-07-11",
+        "medication": {
+          "concept": {
+            "text": "0.9% Sodium Chloride (250mL Bag)"
+          }
+        },
+        "dosageInstruction": [
+          {
+            "sequence": 4,
+            "text": "0.9% Sodium Chloride (250mL Bag) intraveineuse 250 mL 1/j",
+            "route": {
+              "text": "intraveineuse"
+            },
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 1,
+                "periodUnit": "d"
+              }
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 250.0,
+                  "unit": "mL"
+                }
+              }
+            ]
+          }
+        ],
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>MedicationRequest</b>: 0.9% Sodium Chloride (250mL Bag)</p><p>0.9% Sodium Chloride (250mL Bag) intraveineuse 250 mL 1/j</p></div>"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "resourceType": "Bundle",
+  "type": "collection",
+  "id": "ordo_000001",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:c7b538a9-ecaf-4f66-b6cd-ea58e5066597",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "ordo_000001-med-1",
+        "status": "active",
+        "intent": "order",
+        "subject": {
+          "display": "Elena Perrot"
+        },
+        "requester": {
+          "display": "Mathis Fernandez"
+        },
+        "authoredOn": "2024-02-10",
+        "medication": {
+          "concept": {
+            "text": "Ipratropium Bromide Neb (2.5mL Vial)"
+          }
+        },
+        "dosageInstruction": [
+          {
+            "sequence": 1,
+            "text": "Ipratropium Bromide Neb (2.5mL Vial) flacon ih 1 NEB 4/j",
+            "route": {
+              "text": "ih"
+            },
+            "timing": {
+              "repeat": {
+                "frequency": 4,
+                "period": 1,
+                "periodUnit": "d"
+              }
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 1.0,
+                  "unit": "NEB"
+                }
+              }
+            ]
+          }
+        ],
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>MedicationRequest</b>: Ipratropium Bromide Neb (2.5mL Vial)</p><p>Ipratropium Bromide Neb (2.5mL Vial) flacon ih 1 NEB 4/j</p></div>"
+        }
+      }
+    }
+  ]
+}

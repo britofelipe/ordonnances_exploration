@@ -1,0 +1,162 @@
+{
+  "resourceType": "Bundle",
+  "type": "collection",
+  "id": "ordo_000004",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:96c5b9bb-c89f-4f8c-8c01-b4bd444f66ed",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "ordo_000004-med-1",
+        "status": "active",
+        "intent": "order",
+        "subject": {
+          "display": "Louis Girard"
+        },
+        "requester": {
+          "display": "Eva Henry"
+        },
+        "authoredOn": "2024-07-12",
+        "medication": {
+          "concept": {
+            "text": "Sodium Chloride 0.9%  Flush (10 mL Syringe)"
+          }
+        },
+        "dosageInstruction": [
+          {
+            "sequence": 1,
+            "text": "Sodium Chloride 0.9%  Flush (10 mL Syringe) intraveineuse 3 mL 3/j",
+            "route": {
+              "text": "intraveineuse"
+            },
+            "timing": {
+              "repeat": {
+                "frequency": 3,
+                "period": 1,
+                "periodUnit": "d"
+              }
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 3.0,
+                  "unit": "mL"
+                }
+              }
+            ]
+          }
+        ],
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>MedicationRequest</b>: Sodium Chloride 0.9%  Flush (10 mL Syringe)</p><p>Sodium Chloride 0.9%  Flush (10 mL Syringe) intraveineuse 3 mL 3/j</p></div>"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:6eed654d-b0c9-4cfc-9072-db882ff7277b",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "ordo_000004-med-2",
+        "status": "active",
+        "intent": "order",
+        "subject": {
+          "display": "Louis Girard"
+        },
+        "requester": {
+          "display": "Eva Henry"
+        },
+        "authoredOn": "2024-07-12",
+        "medication": {
+          "concept": {
+            "text": "PredniSONE (20 mg Tablet)"
+          }
+        },
+        "dosageInstruction": [
+          {
+            "sequence": 2,
+            "text": "PredniSONE (20 mg Tablet) comprimé po/ng 40 mg 1/j 1 jours",
+            "route": {
+              "text": "po/ng"
+            },
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 1,
+                "periodUnit": "d",
+                "boundsDuration": {
+                  "value": 1,
+                  "unit": "d"
+                }
+              }
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 40.0,
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ],
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>MedicationRequest</b>: PredniSONE (20 mg Tablet)</p><p>PredniSONE (20 mg Tablet) comprimé po/ng 40 mg 1/j 1 jours</p></div>"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:b82edd14-a533-45ce-9598-936b3def8cc9",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "ordo_000004-med-3",
+        "status": "active",
+        "intent": "order",
+        "subject": {
+          "display": "Louis Girard"
+        },
+        "requester": {
+          "display": "Eva Henry"
+        },
+        "authoredOn": "2024-07-12",
+        "medication": {
+          "concept": {
+            "text": "Docusate Sodium (100mg Capsule)"
+          }
+        },
+        "dosageInstruction": [
+          {
+            "sequence": 3,
+            "text": "Docusate Sodium (100mg Capsule) gélule po/ng 100 mg 2/j 1 jours",
+            "route": {
+              "text": "po/ng"
+            },
+            "timing": {
+              "repeat": {
+                "frequency": 2,
+                "period": 1,
+                "periodUnit": "d",
+                "boundsDuration": {
+                  "value": 1,
+                  "unit": "d"
+                }
+              }
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 100.0,
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ],
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>MedicationRequest</b>: Docusate Sodium (100mg Capsule)</p><p>Docusate Sodium (100mg Capsule) gélule po/ng 100 mg 2/j 1 jours</p></div>"
+        }
+      }
+    }
+  ]
+}

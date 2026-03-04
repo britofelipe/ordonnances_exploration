@@ -1,0 +1,192 @@
+{
+  "resourceType": "Bundle",
+  "type": "collection",
+  "id": "ordo_000003",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:3fa86125-5639-4542-aaa0-b6e6f34f399e",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "ordo_000003-med-1",
+        "status": "active",
+        "intent": "order",
+        "subject": {
+          "display": "Sarah Garnier"
+        },
+        "requester": {
+          "display": "Jules Laurent"
+        },
+        "authoredOn": "2024-03-10",
+        "medication": {
+          "concept": {
+            "text": "Potassium Chloride (10mEq ER Tablet)"
+          }
+        },
+        "dosageInstruction": [
+          {
+            "sequence": 1,
+            "text": "Potassium Chloride (10mEq ER Tablet) comprimé orale 40 mEq 1/j",
+            "route": {
+              "text": "orale"
+            },
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 1,
+                "periodUnit": "d"
+              }
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 40.0,
+                  "unit": "mEq"
+                }
+              }
+            ]
+          }
+        ],
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>MedicationRequest</b>: Potassium Chloride (10mEq ER Tablet)</p><p>Potassium Chloride (10mEq ER Tablet) comprimé orale 40 mEq 1/j</p></div>"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:6416b038-6f75-4d8a-aceb-e398993f07fd",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "ordo_000003-med-2",
+        "status": "active",
+        "intent": "order",
+        "subject": {
+          "display": "Sarah Garnier"
+        },
+        "requester": {
+          "display": "Jules Laurent"
+        },
+        "authoredOn": "2024-03-10",
+        "medication": {
+          "concept": {
+            "text": "Atorvastatin (10mg Tablet)"
+          }
+        },
+        "dosageInstruction": [
+          {
+            "sequence": 2,
+            "text": "Atorvastatin (10mg Tablet) comprimé po/ng 10 mg 1/j 1 jours",
+            "route": {
+              "text": "po/ng"
+            },
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 1,
+                "periodUnit": "d",
+                "boundsDuration": {
+                  "value": 1,
+                  "unit": "d"
+                }
+              }
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 10.0,
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ],
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>MedicationRequest</b>: Atorvastatin (10mg Tablet)</p><p>Atorvastatin (10mg Tablet) comprimé po/ng 10 mg 1/j 1 jours</p></div>"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:df88c2a1-4766-4101-afa3-ed58f0baf3d0",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "ordo_000003-med-3",
+        "status": "active",
+        "intent": "order",
+        "subject": {
+          "display": "Sarah Garnier"
+        },
+        "requester": {
+          "display": "Jules Laurent"
+        },
+        "authoredOn": "2024-03-10",
+        "medication": {
+          "concept": {
+            "text": "HYDROmorphone (Dilaudid) (2mg/mL Syringe)"
+          }
+        },
+        "dosageInstruction": [
+          {
+            "sequence": 3,
+            "text": "HYDROmorphone (Dilaudid) (2mg/mL Syringe) intraveineuse 0.5 mg 1/j",
+            "route": {
+              "text": "intraveineuse"
+            },
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 1,
+                "periodUnit": "d"
+              }
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 0.5,
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ],
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>MedicationRequest</b>: HYDROmorphone (Dilaudid) (2mg/mL Syringe)</p><p>HYDROmorphone (Dilaudid) (2mg/mL Syringe) intraveineuse 0.5 mg 1/j</p></div>"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:640b0a1f-9ee5-4047-a485-04074d0523ad",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "ordo_000003-med-4",
+        "status": "active",
+        "intent": "order",
+        "subject": {
+          "display": "Sarah Garnier"
+        },
+        "requester": {
+          "display": "Jules Laurent"
+        },
+        "authoredOn": "2024-03-10",
+        "medication": {
+          "concept": {
+            "text": "Acetaminophen (325mg Tablet)"
+          }
+        },
+        "dosageInstruction": [
+          {
+            "sequence": 4,
+            "text": "Acetaminophen (325mg Tablet) comprimé po/ng 325-650 mg",
+            "route": {
+              "text": "po/ng"
+            }
+          }
+        ],
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>MedicationRequest</b>: Acetaminophen (325mg Tablet)</p><p>Acetaminophen (325mg Tablet) comprimé po/ng 325-650 mg</p></div>"
+        }
+      }
+    }
+  ]
+}
