@@ -6,6 +6,8 @@ import logging
 from pathlib import Path
 import numpy as np
 import torch
+from dataclasses import dataclass
+from typing import List, Tuple, Dict, Optional
 
 from datasets import Dataset
 from transformers import (
@@ -16,7 +18,29 @@ from transformers import (
     Seq2SeqTrainingArguments,
 )
 
-from ordo_gen.generate_ordo_mimic import Posology, LineItem, OrdoDoc
+@dataclass
+class Posology:
+    dose: str
+    frequency: str
+    duration: str
+    route: str
+    form: str
+    as_needed: bool = False
+    as_needed_for: str = ""
+
+@dataclass
+class LineItem:
+    drug_name: str
+    strength: str
+    posology: Posology
+    refills: Optional[int] = None
+
+@dataclass
+class OrdoDoc:
+    patient_name: str
+    prescriber_name: str
+    date_str: str
+    lines: List[LineItem]
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
