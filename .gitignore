@@ -9,7 +9,7 @@ __pycache__/
 *.png
 *.json
 *.out
-*.txt
+#*.txt
 /logs
 /toobib-ordo-bert2bert
 /toobib-ordo-bert2bert-template-simplified
