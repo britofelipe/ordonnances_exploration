@@ -17,13 +17,10 @@ module load anaconda3/2022.10/gcc-13.1.0
 export PYTHONNOUSERSITE=1
 
 # Activate the environment
-source activate flan_t5_small_env
+source activate flan_t5_env
 
 # Display installed packages
 python -m pip list
 
 # Run Flan-T5 fine-tuning script
-python train_flan_t5_dsl_fhir.py \
-    --data_dir output_mimic_fhir_ocr_template_prod_brut \
-    --output_dir flan_t5_small_out \
-    --model_name google/flan-t5-small
+python finetuning_flan_T5_small_val_test.py --data_dir output_mimic_fhir_ocr_template_prod_brut --output_dir flan_t5_small_out --model_name google/flan-t5-small
