@@ -174,6 +174,7 @@ def preprocess_batch(batch, tokenizer, max_input_len=512, max_target_len=512):
         max_length=max_input_len,
         padding="max_length",
         truncation=True,
+        return_tensors=None,
     )
 
     with tokenizer.as_target_tokenizer():
@@ -182,18 +183,19 @@ def preprocess_batch(batch, tokenizer, max_input_len=512, max_target_len=512):
             max_length=max_target_len,
             padding="max_length",
             truncation=True,
+            return_tensors=None,
         )
+
+    input_ids = inputs["input_ids"]
+    attention_mask = inputs["attention_mask"]
+    label_ids = labels["input_ids"]
 
     label_ids = [
         [(lid if lid != tokenizer.pad_token_id else -100) for lid in seq]
-        for seq in labels["input_ids"]
+        for seq in label_ids
     ]
 
-    return {
-        "input_ids": inputs["input_ids"],
-        "attention_mask": inputs["attention_mask"],
-        "labels": label_ids,
-    }
+    return {"input_ids": input_ids, "attention_mask": attention_mask, "labels": label_ids}
 
 # =============================
 # Metrics
@@ -232,7 +234,12 @@ def main():
     np.random.seed(args.seed)
 
     data_dir = Path(args.data_dir)
+    assert data_dir.exists(), f"{data_dir} does not exist"
+
     pairs = [load_one_pair(p) for p in sorted(data_dir.glob("*.txt"))]
+
+    if len(pairs) == 0:
+        raise SystemExit("No data found. Exiting.")
 
     dataset = Dataset.from_list(pairs)
 
@@ -302,7 +309,7 @@ def main():
     pred_ids = predictions.predictions
     label_ids = predictions.label_ids
 
-    label_ids = np.where(label_ids != -100, tokenizer.pad_token_id, label_ids)
+    label_ids = np.where(label_ids == -100, tokenizer.pad_token_id, label_ids)
 
     pred_texts = tokenizer.batch_decode(pred_ids, skip_special_tokens=True)
     label_texts = tokenizer.batch_decode(label_ids, skip_special_tokens=True)
