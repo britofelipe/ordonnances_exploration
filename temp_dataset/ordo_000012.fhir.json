@@ -1,0 +1,56 @@
+{
+  "resourceType": "Bundle",
+  "type": "collection",
+  "id": "ordo_000012",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:0bacaab8-88c2-4897-bc9a-b782f43cfeac",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "ordo_000012-med-1",
+        "status": "active",
+        "intent": "order",
+        "subject": {
+          "display": "Arthur Guerin"
+        },
+        "requester": {
+          "display": "Quentin Lefebvre"
+        },
+        "authoredOn": "2024-09-10",
+        "medication": {
+          "concept": {
+            "text": "Heparin (5000 Units / mL- 1mL Vial)"
+          }
+        },
+        "dosageInstruction": [
+          {
+            "sequence": 1,
+            "text": "Heparin (5000 Units / mL- 1mL Vial) flacon sous-cutanée 5000 UNIT 3/j",
+            "route": {
+              "text": "sous-cutanée"
+            },
+            "timing": {
+              "repeat": {
+                "frequency": 3,
+                "period": 1,
+                "periodUnit": "d"
+              }
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 5000.0,
+                  "unit": "UNIT"
+                }
+              }
+            ]
+          }
+        ],
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>MedicationRequest</b>: Heparin (5000 Units / mL- 1mL Vial)</p><p>Heparin (5000 Units / mL- 1mL Vial) flacon sous-cutanée 5000 UNIT 3/j</p></div>"
+        }
+      }
+    }
+  ]
+}

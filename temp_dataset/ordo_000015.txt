@@ -1,0 +1,9 @@
+DIN
+ORDONNANCE
+Prescripteur: Noah Blanc
+Date: 19/05/2024
+Patient: Margaux Dupont
+- Rifaximin (550mg Tablet)
+comprimé po/ng
+550 mg 2/j 1 jours
+ol In ITR A 1 NL HR

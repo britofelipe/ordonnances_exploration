@@ -1,0 +1,204 @@
+{
+  "resourceType": "Bundle",
+  "type": "collection",
+  "id": "ordo_000009",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:cf90e3cd-21fb-4696-954a-6875e7a93302",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "ordo_000009-med-1",
+        "status": "active",
+        "intent": "order",
+        "subject": {
+          "display": "Alexandre Mercier"
+        },
+        "requester": {
+          "display": "Lucas Lambert"
+        },
+        "authoredOn": "2024-05-20",
+        "medication": {
+          "concept": {
+            "text": "Albuterol Inhaler (8 g Inhaler)"
+          }
+        },
+        "dosageInstruction": [
+          {
+            "sequence": 1,
+            "text": "Albuterol Inhaler (8 g Inhaler) ih 2 PUFF",
+            "route": {
+              "text": "ih"
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 2.0,
+                  "unit": "PUFF"
+                }
+              }
+            ]
+          }
+        ],
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>MedicationRequest</b>: Albuterol Inhaler (8 g Inhaler)</p><p>Albuterol Inhaler (8 g Inhaler) ih 2 PUFF</p></div>"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:4828b08a-5c5b-40bd-94ba-d6747836ad18",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "ordo_000009-med-2",
+        "status": "active",
+        "intent": "order",
+        "subject": {
+          "display": "Alexandre Mercier"
+        },
+        "requester": {
+          "display": "Lucas Lambert"
+        },
+        "authoredOn": "2024-05-20",
+        "medication": {
+          "concept": {
+            "text": "MetRONIDAZOLE (FLagyl) (500mg Premix Bag)"
+          }
+        },
+        "dosageInstruction": [
+          {
+            "sequence": 2,
+            "text": "MetRONIDAZOLE (FLagyl) (500mg Premix Bag) intraveineuse 500 mg 3/j",
+            "route": {
+              "text": "intraveineuse"
+            },
+            "timing": {
+              "repeat": {
+                "frequency": 3,
+                "period": 1,
+                "periodUnit": "d"
+              }
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 500.0,
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ],
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>MedicationRequest</b>: MetRONIDAZOLE (FLagyl) (500mg Premix Bag)</p><p>MetRONIDAZOLE (FLagyl) (500mg Premix Bag) intraveineuse 500 mg 3/j</p></div>"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:74225183-38d5-4d78-9304-20cb3d448f9e",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "ordo_000009-med-3",
+        "status": "active",
+        "intent": "order",
+        "subject": {
+          "display": "Alexandre Mercier"
+        },
+        "requester": {
+          "display": "Lucas Lambert"
+        },
+        "authoredOn": "2024-05-20",
+        "medication": {
+          "concept": {
+            "text": "Omeprazole (20mg DR Capsule)"
+          }
+        },
+        "dosageInstruction": [
+          {
+            "sequence": 3,
+            "text": "Omeprazole (20mg DR Capsule) gélule orale 40 mg 1/j 1 jours",
+            "route": {
+              "text": "orale"
+            },
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 1,
+                "periodUnit": "d",
+                "boundsDuration": {
+                  "value": 1,
+                  "unit": "d"
+                }
+              }
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 40.0,
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ],
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>MedicationRequest</b>: Omeprazole (20mg DR Capsule)</p><p>Omeprazole (20mg DR Capsule) gélule orale 40 mg 1/j 1 jours</p></div>"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:04ea7758-c518-4bbb-a6b0-24e52415a27e",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "ordo_000009-med-4",
+        "status": "active",
+        "intent": "order",
+        "subject": {
+          "display": "Alexandre Mercier"
+        },
+        "requester": {
+          "display": "Lucas Lambert"
+        },
+        "authoredOn": "2024-05-20",
+        "medication": {
+          "concept": {
+            "text": "Acetylcysteine 20% (800mg/4ml Vial)"
+          }
+        },
+        "dosageInstruction": [
+          {
+            "sequence": 4,
+            "text": "Acetylcysteine 20% (800mg/4ml Vial) flacon po/ng 600 mg 2/j 1 jours",
+            "route": {
+              "text": "po/ng"
+            },
+            "timing": {
+              "repeat": {
+                "frequency": 2,
+                "period": 1,
+                "periodUnit": "d",
+                "boundsDuration": {
+                  "value": 1,
+                  "unit": "d"
+                }
+              }
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 600.0,
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ],
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>MedicationRequest</b>: Acetylcysteine 20% (800mg/4ml Vial)</p><p>Acetylcysteine 20% (800mg/4ml Vial) flacon po/ng 600 mg 2/j 1 jours</p></div>"
+        }
+      }
+    }
+  ]
+}

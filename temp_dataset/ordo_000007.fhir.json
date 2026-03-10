@@ -1,0 +1,49 @@
+{
+  "resourceType": "Bundle",
+  "type": "collection",
+  "id": "ordo_000007",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:e4975089-426f-4479-bfc6-35c7eee55672",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "ordo_000007-med-1",
+        "status": "active",
+        "intent": "order",
+        "subject": {
+          "display": "Quentin Renault"
+        },
+        "requester": {
+          "display": "Camille Durand"
+        },
+        "authoredOn": "2024-02-12",
+        "medication": {
+          "concept": {
+            "text": "Acetaminophen (500mg Tablet)"
+          }
+        },
+        "dosageInstruction": [
+          {
+            "sequence": 1,
+            "text": "Acetaminophen (500mg Tablet) comprimé po/ng 500 mg",
+            "route": {
+              "text": "po/ng"
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 500.0,
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ],
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>MedicationRequest</b>: Acetaminophen (500mg Tablet)</p><p>Acetaminophen (500mg Tablet) comprimé po/ng 500 mg</p></div>"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,154 @@
+{
+  "resourceType": "Bundle",
+  "type": "collection",
+  "id": "ordo_000011",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:ad0960d9-306b-4015-a2d5-a9cc368c74d3",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "ordo_000011-med-1",
+        "status": "active",
+        "intent": "order",
+        "subject": {
+          "display": "Jean Muller"
+        },
+        "requester": {
+          "display": "Elena Dubois"
+        },
+        "authoredOn": "2024-08-23",
+        "medication": {
+          "concept": {
+            "text": "Spironolactone (25mg Tablet)"
+          }
+        },
+        "dosageInstruction": [
+          {
+            "sequence": 1,
+            "text": "Spironolactone (25mg Tablet) comprimé po/ng 50 mg 1/j",
+            "route": {
+              "text": "po/ng"
+            },
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 1,
+                "periodUnit": "d"
+              }
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 50.0,
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ],
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>MedicationRequest</b>: Spironolactone (25mg Tablet)</p><p>Spironolactone (25mg Tablet) comprimé po/ng 50 mg 1/j</p></div>"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:0e7df1e3-e83c-4e34-a7aa-ca85f4bd5efb",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "ordo_000011-med-2",
+        "status": "active",
+        "intent": "order",
+        "subject": {
+          "display": "Jean Muller"
+        },
+        "requester": {
+          "display": "Elena Dubois"
+        },
+        "authoredOn": "2024-08-23",
+        "medication": {
+          "concept": {
+            "text": "Ciprofloxacin IV (400mg Premix Bag)"
+          }
+        },
+        "dosageInstruction": [
+          {
+            "sequence": 2,
+            "text": "Ciprofloxacin IV (400mg Premix Bag) intraveineuse 400 mg 1/j",
+            "route": {
+              "text": "intraveineuse"
+            },
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 1,
+                "periodUnit": "d"
+              }
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 400.0,
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ],
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>MedicationRequest</b>: Ciprofloxacin IV (400mg Premix Bag)</p><p>Ciprofloxacin IV (400mg Premix Bag) intraveineuse 400 mg 1/j</p></div>"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:5ec10027-7c2e-4915-a835-e5c179b3f6b6",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "ordo_000011-med-3",
+        "status": "active",
+        "intent": "order",
+        "subject": {
+          "display": "Jean Muller"
+        },
+        "requester": {
+          "display": "Elena Dubois"
+        },
+        "authoredOn": "2024-08-23",
+        "medication": {
+          "concept": {
+            "text": "FoLIC Acid (5mg/mL-10mL)"
+          }
+        },
+        "dosageInstruction": [
+          {
+            "sequence": 3,
+            "text": "FoLIC Acid (5mg/mL-10mL) intraveineuse 1 mg 1/j",
+            "route": {
+              "text": "intraveineuse"
+            },
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 1,
+                "periodUnit": "d"
+              }
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 1.0,
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ],
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>MedicationRequest</b>: FoLIC Acid (5mg/mL-10mL)</p><p>FoLIC Acid (5mg/mL-10mL) intraveineuse 1 mg 1/j</p></div>"
+        }
+      }
+    }
+  ]
+}

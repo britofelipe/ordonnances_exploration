@@ -1,0 +1,147 @@
+{
+  "resourceType": "Bundle",
+  "type": "collection",
+  "id": "ordo_000010",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:008c21fe-8dbd-4439-811b-ec75981b93bd",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "ordo_000010-med-1",
+        "status": "active",
+        "intent": "order",
+        "subject": {
+          "display": "Anaïs Perrot"
+        },
+        "requester": {
+          "display": "Nina Garnier"
+        },
+        "authoredOn": "2024-09-21",
+        "medication": {
+          "concept": {
+            "text": "Emtricitabine-Tenofovir (Truvada) (200-300mg Tablet)"
+          }
+        },
+        "dosageInstruction": [
+          {
+            "sequence": 1,
+            "text": "Emtricitabine-Tenofovir (Truvada) (200-300mg Tablet) comprimé orale 1 TAB 1/j",
+            "route": {
+              "text": "orale"
+            },
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 1,
+                "periodUnit": "d"
+              }
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 1.0,
+                  "unit": "TAB"
+                }
+              }
+            ]
+          }
+        ],
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>MedicationRequest</b>: Emtricitabine-Tenofovir (Truvada) (200-300mg Tablet)</p><p>Emtricitabine-Tenofovir (Truvada) (200-300mg Tablet) comprimé orale 1 TAB 1/j</p></div>"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:f1ca4949-defd-4a71-a803-e94a593fa261",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "ordo_000010-med-2",
+        "status": "active",
+        "intent": "order",
+        "subject": {
+          "display": "Anaïs Perrot"
+        },
+        "requester": {
+          "display": "Nina Garnier"
+        },
+        "authoredOn": "2024-09-21",
+        "medication": {
+          "concept": {
+            "text": "Ibuprofen (600mg Tablet)"
+          }
+        },
+        "dosageInstruction": [
+          {
+            "sequence": 2,
+            "text": "Ibuprofen (600mg Tablet) comprimé orale 600 mg",
+            "route": {
+              "text": "orale"
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 600.0,
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ],
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>MedicationRequest</b>: Ibuprofen (600mg Tablet)</p><p>Ibuprofen (600mg Tablet) comprimé orale 600 mg</p></div>"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:71fd31bf-87bc-482b-b89c-800b75ab0818",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "ordo_000010-med-3",
+        "status": "active",
+        "intent": "order",
+        "subject": {
+          "display": "Anaïs Perrot"
+        },
+        "requester": {
+          "display": "Nina Garnier"
+        },
+        "authoredOn": "2024-09-21",
+        "medication": {
+          "concept": {
+            "text": "Levothyroxine Sodium (25mcg Tablet)"
+          }
+        },
+        "dosageInstruction": [
+          {
+            "sequence": 3,
+            "text": "Levothyroxine Sodium (25mcg Tablet) comprimé po/ng 25 mcg 1/j",
+            "route": {
+              "text": "po/ng"
+            },
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 1,
+                "periodUnit": "d"
+              }
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 25.0,
+                  "unit": "mcg"
+                }
+              }
+            ]
+          }
+        ],
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>MedicationRequest</b>: Levothyroxine Sodium (25mcg Tablet)</p><p>Levothyroxine Sodium (25mcg Tablet) comprimé po/ng 25 mcg 1/j</p></div>"
+        }
+      }
+    }
+  ]
+}

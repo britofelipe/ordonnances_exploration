@@ -1,0 +1,156 @@
+{
+  "resourceType": "Bundle",
+  "type": "collection",
+  "id": "ordo_000013",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:dcbc88a2-c6a9-44f3-a402-b38977071df9",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "ordo_000013-med-1",
+        "status": "active",
+        "intent": "order",
+        "subject": {
+          "display": "Marie Durand"
+        },
+        "requester": {
+          "display": "Elena Perrot"
+        },
+        "authoredOn": "2024-08-20",
+        "medication": {
+          "concept": {
+            "text": "Nicotine Patch (14mg/24Hr Patch)"
+          }
+        },
+        "dosageInstruction": [
+          {
+            "sequence": 1,
+            "text": "Nicotine Patch (14mg/24Hr Patch) td 14 mg 1/j",
+            "route": {
+              "text": "td"
+            },
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 1,
+                "periodUnit": "d"
+              }
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 14.0,
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ],
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>MedicationRequest</b>: Nicotine Patch (14mg/24Hr Patch)</p><p>Nicotine Patch (14mg/24Hr Patch) td 14 mg 1/j</p></div>"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:d43adccc-2f54-4544-b999-b707e7f49cc0",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "ordo_000013-med-2",
+        "status": "active",
+        "intent": "order",
+        "subject": {
+          "display": "Marie Durand"
+        },
+        "requester": {
+          "display": "Elena Perrot"
+        },
+        "authoredOn": "2024-08-20",
+        "medication": {
+          "concept": {
+            "text": "0.9% Sodium Chloride (100 mL Bag)"
+          }
+        },
+        "dosageInstruction": [
+          {
+            "sequence": 2,
+            "text": "0.9% Sodium Chloride (100 mL Bag) intraveineuse 2 BAG 5 jours",
+            "route": {
+              "text": "intraveineuse"
+            },
+            "timing": {
+              "repeat": {
+                "boundsDuration": {
+                  "value": 5,
+                  "unit": "d"
+                }
+              }
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 2.0,
+                  "unit": "BAG"
+                }
+              }
+            ]
+          }
+        ],
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>MedicationRequest</b>: 0.9% Sodium Chloride (100 mL Bag)</p><p>0.9% Sodium Chloride (100 mL Bag) intraveineuse 2 BAG 5 jours</p></div>"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:c4ef3bb3-0235-490a-b64d-2456252fb91d",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "ordo_000013-med-3",
+        "status": "active",
+        "intent": "order",
+        "subject": {
+          "display": "Marie Durand"
+        },
+        "requester": {
+          "display": "Elena Perrot"
+        },
+        "authoredOn": "2024-08-20",
+        "medication": {
+          "concept": {
+            "text": "Milk of Magnesia (30mL UD Cup)"
+          }
+        },
+        "dosageInstruction": [
+          {
+            "sequence": 3,
+            "text": "Milk of Magnesia (30mL UD Cup) orale 30 mL 4 jours",
+            "route": {
+              "text": "orale"
+            },
+            "timing": {
+              "repeat": {
+                "boundsDuration": {
+                  "value": 4,
+                  "unit": "d"
+                }
+              }
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 30.0,
+                  "unit": "mL"
+                }
+              }
+            ]
+          }
+        ],
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>MedicationRequest</b>: Milk of Magnesia (30mL UD Cup)</p><p>Milk of Magnesia (30mL UD Cup) orale 30 mL 4 jours</p></div>"
+        }
+      }
+    }
+  ]
+}

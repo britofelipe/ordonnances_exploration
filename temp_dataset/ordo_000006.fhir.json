@@ -1,0 +1,97 @@
+{
+  "resourceType": "Bundle",
+  "type": "collection",
+  "id": "ordo_000006",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:a9ee2c60-90e9-4f47-abb4-d423595f85f1",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "ordo_000006-med-1",
+        "status": "active",
+        "intent": "order",
+        "subject": {
+          "display": "Julie Marchand"
+        },
+        "requester": {
+          "display": "Anaïs Guerin"
+        },
+        "authoredOn": "2024-12-12",
+        "medication": {
+          "concept": {
+            "text": "Spironolactone (25mg Tablet)"
+          }
+        },
+        "dosageInstruction": [
+          {
+            "sequence": 1,
+            "text": "Spironolactone (25mg Tablet) comprimé po/ng 50 mg 1/j",
+            "route": {
+              "text": "po/ng"
+            },
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 1,
+                "periodUnit": "d"
+              }
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 50.0,
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ],
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>MedicationRequest</b>: Spironolactone (25mg Tablet)</p><p>Spironolactone (25mg Tablet) comprimé po/ng 50 mg 1/j</p></div>"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:77079b36-2e6c-4ae7-892a-dd127fc202b1",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "ordo_000006-med-2",
+        "status": "active",
+        "intent": "order",
+        "subject": {
+          "display": "Julie Marchand"
+        },
+        "requester": {
+          "display": "Anaïs Guerin"
+        },
+        "authoredOn": "2024-12-12",
+        "medication": {
+          "concept": {
+            "text": "Morphine Sulfate (5 mg Vial)"
+          }
+        },
+        "dosageInstruction": [
+          {
+            "sequence": 2,
+            "text": "Morphine Sulfate (5 mg Vial) flacon intraveineuse 2-4 mg 1/j",
+            "route": {
+              "text": "intraveineuse"
+            },
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 1,
+                "periodUnit": "d"
+              }
+            }
+          }
+        ],
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>MedicationRequest</b>: Morphine Sulfate (5 mg Vial)</p><p>Morphine Sulfate (5 mg Vial) flacon intraveineuse 2-4 mg 1/j</p></div>"
+        }
+      }
+    }
+  ]
+}

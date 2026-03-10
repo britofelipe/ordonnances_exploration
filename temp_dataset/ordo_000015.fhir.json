@@ -1,0 +1,60 @@
+{
+  "resourceType": "Bundle",
+  "type": "collection",
+  "id": "ordo_000015",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:4635ab2c-e5f3-44be-8bd2-9717ca90b3cb",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "ordo_000015-med-1",
+        "status": "active",
+        "intent": "order",
+        "subject": {
+          "display": "Margaux Dupont"
+        },
+        "requester": {
+          "display": "Noah Blanc"
+        },
+        "authoredOn": "2024-05-19",
+        "medication": {
+          "concept": {
+            "text": "Rifaximin (550mg Tablet)"
+          }
+        },
+        "dosageInstruction": [
+          {
+            "sequence": 1,
+            "text": "Rifaximin (550mg Tablet) comprimé po/ng 550 mg 2/j 1 jours",
+            "route": {
+              "text": "po/ng"
+            },
+            "timing": {
+              "repeat": {
+                "frequency": 2,
+                "period": 1,
+                "periodUnit": "d",
+                "boundsDuration": {
+                  "value": 1,
+                  "unit": "d"
+                }
+              }
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 550.0,
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ],
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>MedicationRequest</b>: Rifaximin (550mg Tablet)</p><p>Rifaximin (550mg Tablet) comprimé po/ng 550 mg 2/j 1 jours</p></div>"
+        }
+      }
+    }
+  ]
+}

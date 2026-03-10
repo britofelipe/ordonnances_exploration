@@ -1,0 +1,203 @@
+{
+  "resourceType": "Bundle",
+  "type": "collection",
+  "id": "ordo_000014",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:34fc959f-a00d-47f7-b357-29bf22013ccc",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "ordo_000014-med-1",
+        "status": "active",
+        "intent": "order",
+        "subject": {
+          "display": "Victor Perrot"
+        },
+        "requester": {
+          "display": "Quentin Garnier"
+        },
+        "authoredOn": "2024-05-22",
+        "medication": {
+          "concept": {
+            "text": "Furosemide (40mg Tablet)"
+          }
+        },
+        "dosageInstruction": [
+          {
+            "sequence": 1,
+            "text": "Furosemide (40mg Tablet) comprimé po/ng 40 mg 1/j",
+            "route": {
+              "text": "po/ng"
+            },
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 1,
+                "periodUnit": "d"
+              }
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 40.0,
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ],
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>MedicationRequest</b>: Furosemide (40mg Tablet)</p><p>Furosemide (40mg Tablet) comprimé po/ng 40 mg 1/j</p></div>"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:16f5e284-a7b9-43be-953d-ec67c9f2e14c",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "ordo_000014-med-2",
+        "status": "active",
+        "intent": "order",
+        "subject": {
+          "display": "Victor Perrot"
+        },
+        "requester": {
+          "display": "Quentin Garnier"
+        },
+        "authoredOn": "2024-05-22",
+        "medication": {
+          "concept": {
+            "text": "Lidocaine 1% (20mL Vial)"
+          }
+        },
+        "dosageInstruction": [
+          {
+            "sequence": 2,
+            "text": "Lidocaine 1% (20mL Vial) flacon sous-cutanée 20 mL 1/j",
+            "route": {
+              "text": "sous-cutanée"
+            },
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 1,
+                "periodUnit": "d"
+              }
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 20.0,
+                  "unit": "mL"
+                }
+              }
+            ]
+          }
+        ],
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>MedicationRequest</b>: Lidocaine 1% (20mL Vial)</p><p>Lidocaine 1% (20mL Vial) flacon sous-cutanée 20 mL 1/j</p></div>"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:b2dc2e96-d556-423c-a4b7-b6cbdc85f331",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "ordo_000014-med-3",
+        "status": "active",
+        "intent": "order",
+        "subject": {
+          "display": "Victor Perrot"
+        },
+        "requester": {
+          "display": "Quentin Garnier"
+        },
+        "authoredOn": "2024-05-22",
+        "medication": {
+          "concept": {
+            "text": "Furosemide (40mg/4mL Vial)"
+          }
+        },
+        "dosageInstruction": [
+          {
+            "sequence": 3,
+            "text": "Furosemide (40mg/4mL Vial) flacon intraveineuse 120 mg 1/j",
+            "route": {
+              "text": "intraveineuse"
+            },
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 1,
+                "periodUnit": "d"
+              }
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 120.0,
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ],
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>MedicationRequest</b>: Furosemide (40mg/4mL Vial)</p><p>Furosemide (40mg/4mL Vial) flacon intraveineuse 120 mg 1/j</p></div>"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:0a4b0944-b554-484b-b332-d9ecb5053a2c",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "ordo_000014-med-4",
+        "status": "active",
+        "intent": "order",
+        "subject": {
+          "display": "Victor Perrot"
+        },
+        "requester": {
+          "display": "Quentin Garnier"
+        },
+        "authoredOn": "2024-05-22",
+        "medication": {
+          "concept": {
+            "text": "Ranitidine (150mg Tablet)"
+          }
+        },
+        "dosageInstruction": [
+          {
+            "sequence": 4,
+            "text": "Ranitidine (150mg Tablet) comprimé po/ng 150 mg 2/j",
+            "route": {
+              "text": "po/ng"
+            },
+            "timing": {
+              "repeat": {
+                "frequency": 2,
+                "period": 1,
+                "periodUnit": "d"
+              }
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 150.0,
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ],
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>MedicationRequest</b>: Ranitidine (150mg Tablet)</p><p>Ranitidine (150mg Tablet) comprimé po/ng 150 mg 2/j</p></div>"
+        }
+      }
+    }
+  ]
+}

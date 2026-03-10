@@ -1,0 +1,106 @@
+{
+  "resourceType": "Bundle",
+  "type": "collection",
+  "id": "ordo_000005",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:d8d4498f-88f9-4697-85ce-9f31642fa59b",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "ordo_000005-med-1",
+        "status": "active",
+        "intent": "order",
+        "subject": {
+          "display": "Julie Fontaine"
+        },
+        "requester": {
+          "display": "Baptiste Picard"
+        },
+        "authoredOn": "2024-12-17",
+        "medication": {
+          "concept": {
+            "text": "Raltegravir (400 mg Tablet)"
+          }
+        },
+        "dosageInstruction": [
+          {
+            "sequence": 1,
+            "text": "Raltegravir (400 mg Tablet) comprimé orale 400 mg 2/j",
+            "route": {
+              "text": "orale"
+            },
+            "timing": {
+              "repeat": {
+                "frequency": 2,
+                "period": 1,
+                "periodUnit": "d"
+              }
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 400.0,
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ],
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>MedicationRequest</b>: Raltegravir (400 mg Tablet)</p><p>Raltegravir (400 mg Tablet) comprimé orale 400 mg 2/j</p></div>"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:9a9e7d4c-cd9a-445a-9ca1-f8a689df0bbe",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "ordo_000005-med-2",
+        "status": "active",
+        "intent": "order",
+        "subject": {
+          "display": "Julie Fontaine"
+        },
+        "requester": {
+          "display": "Baptiste Picard"
+        },
+        "authoredOn": "2024-12-17",
+        "medication": {
+          "concept": {
+            "text": "Ondansetron (2mg/mL-2mL)"
+          }
+        },
+        "dosageInstruction": [
+          {
+            "sequence": 2,
+            "text": "Ondansetron (2mg/mL-2mL) intraveineuse 4 mg 7 jours",
+            "route": {
+              "text": "intraveineuse"
+            },
+            "timing": {
+              "repeat": {
+                "boundsDuration": {
+                  "value": 7,
+                  "unit": "d"
+                }
+              }
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 4.0,
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ],
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>MedicationRequest</b>: Ondansetron (2mg/mL-2mL)</p><p>Ondansetron (2mg/mL-2mL) intraveineuse 4 mg 7 jours</p></div>"
+        }
+      }
+    }
+  ]
+}

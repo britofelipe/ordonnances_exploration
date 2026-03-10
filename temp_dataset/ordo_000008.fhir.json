@@ -1,0 +1,155 @@
+{
+  "resourceType": "Bundle",
+  "type": "collection",
+  "id": "ordo_000008",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:0d796739-c05e-4b4e-9f9e-869b06225be3",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "ordo_000008-med-1",
+        "status": "active",
+        "intent": "order",
+        "subject": {
+          "display": "Léa Girard"
+        },
+        "requester": {
+          "display": "Quentin Chevalier"
+        },
+        "authoredOn": "2024-12-01",
+        "medication": {
+          "concept": {
+            "text": "Influenza Vaccine Quadrivalent (0.5 mL Syringe)"
+          }
+        },
+        "dosageInstruction": [
+          {
+            "sequence": 1,
+            "text": "Influenza Vaccine Quadrivalent (0.5 mL Syringe) intramusculaire 0.5 mL 0/j",
+            "route": {
+              "text": "intramusculaire"
+            },
+            "timing": {
+              "repeat": {
+                "frequency": 0,
+                "period": 1,
+                "periodUnit": "d"
+              }
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 0.5,
+                  "unit": "mL"
+                }
+              }
+            ]
+          }
+        ],
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>MedicationRequest</b>: Influenza Vaccine Quadrivalent (0.5 mL Syringe)</p><p>Influenza Vaccine Quadrivalent (0.5 mL Syringe) intramusculaire 0.5 mL 0/j</p></div>"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:5729fa27-8930-4289-b2a9-1b1ed52c9dfa",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "ordo_000008-med-2",
+        "status": "active",
+        "intent": "order",
+        "subject": {
+          "display": "Léa Girard"
+        },
+        "requester": {
+          "display": "Quentin Chevalier"
+        },
+        "authoredOn": "2024-12-01",
+        "medication": {
+          "concept": {
+            "text": "Heparin Flush (10 units/ml) (10 Units/mL - 5 mL Syringe)"
+          }
+        },
+        "dosageInstruction": [
+          {
+            "sequence": 2,
+            "text": "Heparin Flush (10 units/ml) (10 Units/mL - 5 mL Syringe) intraveineuse 2 mL 1/j",
+            "route": {
+              "text": "intraveineuse"
+            },
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 1,
+                "periodUnit": "d"
+              }
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 2.0,
+                  "unit": "mL"
+                }
+              }
+            ]
+          }
+        ],
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>MedicationRequest</b>: Heparin Flush (10 units/ml) (10 Units/mL - 5 mL Syringe)</p><p>Heparin Flush (10 units/ml) (10 Units/mL - 5 mL Syringe) intraveineuse 2 mL 1/j</p></div>"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ddca6c27-2a49-4416-b893-2414cad5577e",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "ordo_000008-med-3",
+        "status": "active",
+        "intent": "order",
+        "subject": {
+          "display": "Léa Girard"
+        },
+        "requester": {
+          "display": "Quentin Chevalier"
+        },
+        "authoredOn": "2024-12-01",
+        "medication": {
+          "concept": {
+            "text": "Bisacodyl (10mg Suppository)"
+          }
+        },
+        "dosageInstruction": [
+          {
+            "sequence": 3,
+            "text": "Bisacodyl (10mg Suppository) rectale 10 mg 1 jours",
+            "route": {
+              "text": "rectale"
+            },
+            "timing": {
+              "repeat": {
+                "boundsDuration": {
+                  "value": 1,
+                  "unit": "d"
+                }
+              }
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 10.0,
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ],
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>MedicationRequest</b>: Bisacodyl (10mg Suppository)</p><p>Bisacodyl (10mg Suppository) rectale 10 mg 1 jours</p></div>"
+        }
+      }
+    }
+  ]
+}

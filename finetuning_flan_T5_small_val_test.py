@@ -203,15 +203,19 @@ def preprocess_batch(batch, tokenizer, max_input_len=512, max_target_len=512):
 
 def compute_metrics(eval_pred, tokenizer):
     preds, labels = eval_pred
+
     if isinstance(preds, tuple):
         preds = preds[0]
 
+    # FIX: clamp both preds AND labels — generated sequences can also
+    # contain -100 padding when predict_with_generate=True
+    preds  = np.where(preds  != -100, preds,  tokenizer.pad_token_id)
     labels = np.where(labels != -100, labels, tokenizer.pad_token_id)
 
-    pred_strs = tokenizer.batch_decode(preds, skip_special_tokens=True)
+    pred_strs  = tokenizer.batch_decode(preds,  skip_special_tokens=True)
     label_strs = tokenizer.batch_decode(labels, skip_special_tokens=True)
 
-    exact = [int(p == t) for p, t in zip(pred_strs, label_strs)]
+    exact = [int(p.strip() == t.strip()) for p, t in zip(pred_strs, label_strs)]
     return {"exact_match": float(np.mean(exact))}
 
 # =============================
