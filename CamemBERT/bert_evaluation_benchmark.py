@@ -231,7 +231,7 @@ def safe_dsl_to_fhir(dsl_text: str, bundle_id="eval") -> dict:
 # 3) Load pairs
 # =============================
 
-DATA_DIR = Path("output_mimic_fhir_ocr_template_prod") 
+DATA_DIR = Path("output_mimic_fhir_ocr_template_prod_brut") 
 
 def load_one_pair(txt_path: Path):
     json_path = txt_path.with_suffix(".fhir.json")
@@ -260,7 +260,7 @@ print("train:", len(train_ds), "val:", len(val_ds), "test:", len(test_ds))
 # 4) Load checkpoint
 # =============================
 
-output_dir = "./toobib-ordo-bert2bert-prod-100000"
+output_dir = "./toobib-ordo-bert2bert-prod-20000-brut"
 last_checkpoint = get_last_checkpoint(output_dir)
 #last_checkpoint = "./toobib-ordo-bert2bert-prod"
 if last_checkpoint is None:

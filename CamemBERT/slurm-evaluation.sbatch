@@ -2,7 +2,7 @@
 
 #SBATCH --job-name=bert-ev2
 #SBATCH --nodes=1
-#SBATCH --partition=cpu_inter
+#SBATCH --partition=cpu_prod
 #SBATCH --output=logs/slurm-%j.out
 
 echo "Running on $(hostname)"
@@ -53,4 +53,6 @@ source activate bert_env
 #echo "--- Starting Benchmark ---"
 #pip freeze | egrep 'transformers|torch|tokenizers|sentencepiece|safetensors'
 
-python bert_evaluation_benchmark.py
+#python -u repro_fhir.py
+#python -u bert_evaluation_benchmark.py
+python -u plot_training_curves.py

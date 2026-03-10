@@ -554,9 +554,9 @@ def build_dosage_text(drug_line: str, poso, include_labels: bool = False) -> str
 
     # route/form podem entrar sem label (ou com label se quiser)
     if poso.form:
-        parts.append(f"Forme: {poso.form}" if include_labels else poso.form)
+        parts.append(f"{poso.form}" if include_labels else poso.form)
     if poso.route:
-        parts.append(f"Voie: {poso.route}" if include_labels else poso.route)
+        parts.append(f"{poso.route}" if include_labels else poso.route)
 
     # dose/freq/duration
     sig_parts = []
@@ -1000,9 +1000,9 @@ def render_ordo(doc: OrdoDoc, paper="A5", style="typed",
         # --- Forme / Voie (MESMO TAMANHO E COR do medicamento) ---
         details_parts = []
         if line.posology.form:
-            details_parts.append(f"Forme: {line.posology.form}")
+            details_parts.append(f"{line.posology.form}")
         if line.posology.route:
-            details_parts.append(f"Voie: {line.posology.route}")
+            details_parts.append(f"{line.posology.route}")
 
         if details_parts:
             txt_det = "   ".join(details_parts)
@@ -1016,7 +1016,7 @@ def render_ordo(doc: OrdoDoc, paper="A5", style="typed",
             y = y_end + 8
 
         # --- Posologia (MESMO TAMANHO E COR do medicamento) ---
-        txt_pos = f"Posologie: {line.posology.dose}  {line.posology.frequency}  {line.posology.duration}".strip()
+        txt_pos = f"{line.posology.dose}  {line.posology.frequency}  {line.posology.duration}".strip()
         x_pos = area_x0 + 20
         y_end, box_pos, _ = draw_wrapped(
             draw, x_pos, y, txt_pos, ft, "black",

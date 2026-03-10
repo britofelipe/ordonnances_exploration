@@ -21,7 +21,9 @@ from generate_ordo_mimic import Posology, LineItem, OrdoDoc, to_fhir_bundle
 # 1. Carregar pares txt + FHIR
 # =============================
 
-DATA_DIR = Path("output_mimic_fhir_ocr_template_prod")  # ajuste para o diretório real
+DATA_DIR = Path("output_mimic_fhir_ocr_template_prod_brut")  # ajuste para o diretório real
+#output_mimic_fhir_ocr_template_prod -> 100.000 ordonnances mimic avec Voie: et Posologie:
+#output_mimic_fhir_ocr_template_prod_brut -> 20.000 ordonnance mimic données brutes (sans Voie: et Posologie:)
 
 def ordo_to_linear_text(doc: OrdoDoc) -> str:
     lines = []
@@ -364,7 +366,7 @@ tokenized_test = test_ds.map(          # NOVO: tokenizar test também
 data_collator = DataCollatorForSeq2Seq(tokenizer, model=model)
 
 training_args = Seq2SeqTrainingArguments(
-    output_dir="./toobib-ordo-bert2bert-prod-100000",
+    output_dir="./toobib-ordo-bert2bert-prod-20000-brut",
     eval_strategy="epoch",          # avalia no conjunto de validação a cada época
     save_strategy="epoch",
     load_best_model_at_end=True,
@@ -442,8 +444,8 @@ print("Last checkpoint:", last_ckpt)
 trainer.train(resume_from_checkpoint=last_ckpt)
 
 # garanta que o modelo que você quer salvar é o melhor/final
-trainer.save_model("./toobib-ordo-bert2bert-prod-100000")
-tokenizer.save_pretrained("./toobib-ordo-bert2bert-prod-100000")
+trainer.save_model("./toobib-ordo-bert2bert-prod-20000-brut") # toobib-ordo-bert2bert-prod-100000
+tokenizer.save_pretrained("./toobib-ordo-bert2bert-prod-20000-brut")
 
 
 # =============================
@@ -463,7 +465,7 @@ print(test_metrics)
 
 from transformers import EncoderDecoderModel, AutoTokenizer
 
-model_path = "./toobib-ordo-bert2bert-prod-100000"
+model_path = "./toobib-ordo-bert2bert-prod-20000-brut" #"./toobib-ordo-bert2bert-prod-100000"
 tokenizer = AutoTokenizer.from_pretrained(model_path)
 model = EncoderDecoderModel.from_pretrained(model_path)
 model.eval()
@@ -502,7 +504,7 @@ def ordo_txt_to_fhir_json(txt: str):
     return gen_text, fhir_bundle
 
 # exemplo: mesma ordo_0002
-with open("output_mimic_fhir_ocr_template_prod/ordo_0002.txt", encoding="utf-8") as f:
+with open("output_mimic_fhir_ocr_template_prod_brut/ordo_0002.txt", encoding="utf-8") as f:
     txt = f.read()
 linear_str, fhir = ordo_txt_to_fhir_json(txt)
 

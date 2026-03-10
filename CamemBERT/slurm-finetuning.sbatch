@@ -38,5 +38,6 @@ python -m pip list
 #which tesseract
 
 #tesseract --list-langs
-python finetuning_bert_val_test.py
+python -u finetuning_bert_val_test.py
+#python tensor_state_analysis.py --state ./toobib-ordo-bert2bert-prod-100000/checkpoint-405080/trainer_state.json --outdir ./plots --ema 0.95 --rolling 200
 #python bert_evaluation.py
