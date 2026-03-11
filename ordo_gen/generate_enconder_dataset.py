@@ -589,7 +589,7 @@ def sample_unique_drugs(catalog: List[dict], n: int) -> List[dict]:
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--csv",   required=True)
-    parser.add_argument("--out",   default="prescriptions_bio.jsonl")
+    parser.add_argument("--out",   default="encoder_dataset/encoder_dataset.json")
     parser.add_argument("--count", type=int, default=100)
     parser.add_argument("--seed",  type=int, default=42)
     args = parser.parse_args()
