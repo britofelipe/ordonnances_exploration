@@ -273,6 +273,7 @@ def build_compute_metrics(id2label):
 def main():
     cfg, max_records = parse_args()
     print("Config:", cfg)
+    Path(cfg.output_dir).mkdir(parents=True, exist_ok=True)
 
     # --- Load data
     print("\nLoading data...")
@@ -329,7 +330,7 @@ def main():
         warmup_ratio=cfg.warmup_ratio,
         fp16=cfg.fp16,
 
-        evaluation_strategy="epoch",
+        eval_strategy="epoch",
         save_strategy="epoch",
         logging_strategy="epoch",
         load_best_model_at_end=cfg.load_best_model_at_end,
