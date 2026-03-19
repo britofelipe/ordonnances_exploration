@@ -27,8 +27,8 @@ from seqeval.metrics import classification_report, f1_score, precision_score, re
 @dataclass
 class NERConfig:
     model_name: str = "almanach/camembert-bio-base"
-    data_path: str = "data.jsonl"           # your .jsonl file
-    output_dir: str = "./camembert-ner-output"
+    data_path: str = "encoder_dataset/encoder_dataset.json"           # your .jsonl file
+    output_dir: str = "./camembertBIO-ner-output"
     max_length: int = 128
 
     # Training
