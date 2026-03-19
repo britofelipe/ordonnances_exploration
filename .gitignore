@@ -237,3 +237,4 @@ output_mimic_fhir_ocr/
 output_mimic_fhir_ocr_template_prod_brut/
 THESORIMED/
 ordo_imgs/
+ordo_gen/tmp

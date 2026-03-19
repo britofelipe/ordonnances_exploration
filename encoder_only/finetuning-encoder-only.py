@@ -3,6 +3,7 @@ Fine-tuning CamemBERT-bio for Named Entity Recognition
 Medical prescription NER: Drug, Strength, Frequency, etc.
 """
 
+import argparse
 import json
 import numpy as np
 from pathlib import Path
@@ -50,7 +51,40 @@ class NERConfig:
     metric_for_best_model: str = "eval_f1"
 
 
-cfg = NERConfig()
+def parse_args() -> NERConfig:
+    parser = argparse.ArgumentParser(
+        description="Fine-tune CamemBERT-bio for NER",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    defaults = NERConfig()
+
+    # Paths
+    parser.add_argument("--data_path",   default=defaults.data_path,   help="Path to .jsonl dataset")
+    parser.add_argument("--output_dir",  default=defaults.output_dir,  help="Directory for checkpoints and final model")
+    parser.add_argument("--model_name",  default=defaults.model_name,  help="HuggingFace model identifier")
+
+    # Model
+    parser.add_argument("--max_length",  default=defaults.max_length,  type=int,   help="Max token sequence length")
+
+    # Training
+    parser.add_argument("--epochs",      default=defaults.num_train_epochs,          type=int,   dest="num_train_epochs", help="Number of training epochs")
+    parser.add_argument("--train_batch", default=defaults.per_device_train_batch_size, type=int, dest="per_device_train_batch_size", help="Per-device train batch size")
+    parser.add_argument("--eval_batch",  default=defaults.per_device_eval_batch_size,  type=int, dest="per_device_eval_batch_size",  help="Per-device eval batch size")
+    parser.add_argument("--lr",          default=defaults.learning_rate,             type=float, dest="learning_rate",    help="Learning rate")
+    parser.add_argument("--weight_decay",default=defaults.weight_decay,              type=float, help="Weight decay")
+    parser.add_argument("--warmup_ratio",default=defaults.warmup_ratio,              type=float, help="Warmup ratio")
+
+    # Data split
+    parser.add_argument("--test_size",   default=defaults.test_size,   type=float, help="Fraction of data for test set")
+    parser.add_argument("--val_size",    default=defaults.val_size,    type=float, help="Fraction of data for validation set")
+    parser.add_argument("--seed",        default=defaults.seed,        type=int,   help="Random seed")
+
+    # Misc
+    parser.add_argument("--fp16",        default=defaults.fp16,        action=argparse.BooleanOptionalAction, help="Use mixed precision (--fp16 / --no-fp16)")
+    parser.add_argument("--max_records", default=None,                 type=int,   help="Cap dataset size — useful for quick local smoke tests")
+
+    args = parser.parse_args()
+    return NERConfig(**{k: v for k, v in vars(args).items() if k in NERConfig.__dataclass_fields__}), args.max_records
 
 
 # ── 2. LOAD & SPLIT DATA ───────────────────────────────────────────────────────
@@ -63,6 +97,79 @@ def load_jsonl(path: str) -> list[dict]:
             if line:
                 records.append(json.loads(line))
     return records
+
+
+def check_bio_consistency(records: list[dict]) -> bool:
+    """
+    Validate BIO tag sequences across all records.
+
+    Illegal transitions caught:
+      - I-X at the start of a sequence
+      - I-X following O
+      - I-X following I-Y or B-Y where Y != X  (e.g. B-Drug → I-Frequency)
+
+    Prints a detailed report of every violation found.
+    Returns True if the dataset is clean, False otherwise.
+    """
+    violations = []
+
+    for rec_idx, record in enumerate(records):
+        tags = record["ner_tags"]
+        tokens = record["tokens"]
+
+        for i, tag in enumerate(tags):
+            if not tag.startswith("I-"):
+                continue
+
+            entity_type = tag[2:]
+
+            if i == 0:
+                violations.append({
+                    "record": rec_idx,
+                    "position": i,
+                    "token": tokens[i],
+                    "tag": tag,
+                    "reason": "I- tag at the start of sequence",
+                    "context": list(zip(tokens, tags)),
+                })
+                continue
+
+            prev_tag = tags[i - 1]
+            if prev_tag == "O":
+                violations.append({
+                    "record": rec_idx,
+                    "position": i,
+                    "token": tokens[i],
+                    "tag": tag,
+                    "reason": f"I- tag following O (no opening B-)",
+                    "context": list(zip(tokens, tags)),
+                })
+            elif prev_tag[2:] != entity_type:
+                violations.append({
+                    "record": rec_idx,
+                    "position": i,
+                    "token": tokens[i],
+                    "tag": tag,
+                    "reason": f"I-{entity_type} following {prev_tag} (entity type mismatch)",
+                    "context": list(zip(tokens, tags)),
+                })
+
+    # ── Report ────────────────────────────────────────────────────────────────
+    if not violations:
+        print(f"✓ BIO consistency check passed — {len(records)} records, no violations.")
+        return True
+
+    print(f"✗ BIO consistency check failed — {len(violations)} violation(s) in {len(records)} records:\n")
+    for v in violations:
+        print(f"  Record {v['record']:>4}  position {v['position']:>3}  "
+              f"token={v['token']!r:25}  tag={v['tag']!r:15}  → {v['reason']}")
+        # Print the full sequence for context
+        ctx_tokens = [t for t, _ in v["context"]]
+        ctx_tags   = [t for _, t in v["context"]]
+        print(f"           tokens : {ctx_tokens}")
+        print(f"           tags   : {ctx_tags}\n")
+
+    return False
 
 
 def build_label_mappings(records: list[dict]) -> tuple[dict, dict]:
@@ -164,9 +271,23 @@ def build_compute_metrics(id2label):
 # ── 5. MAIN ────────────────────────────────────────────────────────────────────
 
 def main():
+    cfg, max_records = parse_args()
+    print("Config:", cfg)
+
     # --- Load data
-    print("Loading data...")
+    print("\nLoading data...")
     records = load_jsonl(cfg.data_path)
+
+    if max_records is not None:
+        print(f"⚠  Capping dataset to {max_records} records (--max_records flag)")
+        records = records[:max_records]
+
+    print("Checking BIO consistency...")
+    bio_ok = check_bio_consistency(records)
+    if not bio_ok:
+        print("\n⚠  Violations found. Fix your annotations or set allow_bio_errors=True to proceed anyway.")
+        raise SystemExit(1)
+
     label2id, id2label = build_label_mappings(records)
     print(f"Labels ({len(label2id)}): {list(label2id.keys())}")
 
